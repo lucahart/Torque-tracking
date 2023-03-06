@@ -55,6 +55,9 @@ T_sim = 1/sys.pf*sys.X_m/sys.D*(psi_r_ctrl(1,:).*psi_s_ctrl(2,:) - psi_r_ctrl(2,
 
 figure(3);
 plot(t_ctrl_vec, T_sim);
+hold on;
+plot(t_ctrl_vec, ref(1,:), 'k')
+hold off;
 
 title('Torque');
 ylim([0,1.2]);
@@ -99,13 +102,13 @@ fprintf('Average switching frequency: %.2fHz \n', f_sw);
 % -------------------------------------------------------------------------
 T_sim = 1/sys.pf*sys.X_m/sys.D*(psi_r_sim(1,:).*psi_s_sim(2,:) - psi_r_sim(2,:).*psi_s_sim(1,:));
 Psi_sim = vecnorm(psi_s_sim,2,1);
-f = @(r,n) [r(1); reshape([r' r'.*ones(length(r), n-1)]', length(r)*(n),1)];
-T_ref_sim = f(ref(1,:),simulation_samples_per_controller_sample)';
-Psi_ref_sim = f(ref(2,:), simulation_samples_per_controller_sample)';
+f = @(r,n) [reshape([r' r'.*ones(length(r), n-1)]', length(r)*(n),1); r(:,end)];
+T_ref_sim = f(ref(1,1:end-1),simulation_samples_per_controller_sample)';
+Psi_ref_sim = f(ref(2,1:end-1), simulation_samples_per_controller_sample)';
 T_ctrl = 1/sys.pf*sys.X_m/sys.D*(psi_r_ctrl(1,:).*psi_s_ctrl(2,:) - psi_r_ctrl(2,:).*psi_s_ctrl(1,:));
 Psi_ctrl = vecnorm(psi_s_ctrl,2,1);
-T_ref_ctrl = [ref(1,1), ref(1,:)];
-Psi_ref_ctrl = [ref(2,1), ref(2,:)];
+T_ref_ctrl = ref(1,:);
+Psi_ref_ctrl = ref(2,:);
 J = 1/double(n_controller_samples)*sum(ctrl.lam_T*(T_ctrl-T_ref_ctrl).^2 + (1-ctrl.lam_T)*(Psi_ctrl-Psi_ref_ctrl).^2);% + ctrl.lam_u*norm(del_u,1));
 % -------------------------------------------------------------------------
 

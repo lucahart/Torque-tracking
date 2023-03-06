@@ -1,12 +1,12 @@
-function [U_opt, J_opt, iter] = branch_and_bound_nstep(J, J_opt, i, N, U, U_opt, x, u_prev, ref, iter, ctrl)
+function [U_opt, J_opt, iter] = branch_and_bound_nstep_SDP(J, J_opt, i, N, U, U_opt, x, u_prev, ref, iter, ctrl)
 
 
 
     % Split up input-arrays into relevant variables
     psi_s = x(1:2);
     psi_r = x(3:4);
-    T_ref = ref(1,1);
-    Psi_ref = ref(2,1);
+    T_ref = ref(1);
+    Psi_ref = ref(2);
     
     % Create variables for faster execution during optimization
     A_1 = ctrl.A_1;
@@ -31,7 +31,7 @@ function [U_opt, J_opt, iter] = branch_and_bound_nstep(J, J_opt, i, N, U, U_opt,
         if J_prime < J_opt
             if i < N
                 U(3*(i-1)+1:3*i) = u;
-                [U_opt, J_opt, iter] = branch_and_bound_nstep(J_prime, J_opt, i+1, N, U, U_opt, [psi_s_kp1;psi_r_kp1], u, ref(:,2:end), iter, ctrl);
+                [U_opt, J_opt, iter] = branch_and_bound_nstep(J_prime, J_opt, i+1, N, U, U_opt, [psi_s_kp1;psi_r_kp1], u, ref, iter, ctrl);
             else
                 U(3*(i-1)+1:3*i) = u;
                 U_opt = U;

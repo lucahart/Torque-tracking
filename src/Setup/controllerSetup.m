@@ -7,14 +7,14 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
     % *********************************************************************
 
     % 1-step controller
-    ctrl_1step.lam_u = 2e-5;%4e-5;
-    ctrl_1step.lam_T = .1;
+    ctrl_1step.lam_u = 1.2e-4; %.198e-3;
+    ctrl_1step.lam_T = .052;
     ctrl_1step.T_s = 25e-6;
     ctrl_1step.N = 1;
 
     % Multi-step controller
-    ctrl_nstep.lam_u = 8e-5;%1.2e-4; % 1.15e-4 if lam_T = .1 and 2.7e-4 if lam_T = .5 to hold 230-240Hz
-    ctrl_nstep.lam_T = .1;
+    ctrl_nstep.lam_u = 6.15e-4; %3e-3; % 1.15e-4 if lam_T = .1 and 2.7e-4 if lam_T = .5 to hold 230-240Hz
+    ctrl_nstep.lam_T = .052;
     ctrl_nstep.T_s = 25e-6;
     ctrl_nstep.N = 3;
 

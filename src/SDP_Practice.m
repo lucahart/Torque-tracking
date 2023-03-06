@@ -6,7 +6,7 @@ sdpopt = sdpsettings('solver', 'scs', 'verbose', 0, 'dualize', 0, 'scs.eps_abs',
 prec = 1e-3;
 
 %% Create random polynomial
-n = 9;
+n = 3*8;
 [a, s] = generatePolynomial(n);
 
 % Print polynomial

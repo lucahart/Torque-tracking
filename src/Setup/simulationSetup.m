@@ -9,7 +9,7 @@ function sim = simulationSetup(sys, sim_pre, discretization)
     
     % Simulation
     sim.n_fundamentals = 10; % number of fundamentals to simulate
-    sim.T_sim =  5e-6; % simulation sampling interval [s], please choose 
+    sim.T_sim = .5e-6; % simulation sampling interval [s], please choose 
                        % such that ctrl.T_s = n*sim.T_sim, n is integer
     
     % Initial state and input

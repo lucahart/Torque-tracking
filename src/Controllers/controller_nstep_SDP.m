@@ -1,18 +1,18 @@
-function [u_opt, ctrl, iter] = controller_nstep(x, u_prev, ref, ctrl)
+function [u_opt, ctrl, iter] = controller_nstep_SDP(x, u_prev, ref, ctrl)
 
 
-    % Extend reference if array not long enough
-    ref_length = min(ctrl.N,size(ref,2));
-    if ref_length < ctrl.N
-        ref = [ref ref(:,end).*ones(2,ctrl.N-ref_length)];
-    end
+%     % Extend reference if array not long enough
+%     ref_length = min(ctrl.N,size(ref,2));
+%     if ref_length < ctrl.N
+%         ref = [ref ref(:,end).*ones(2,ctrl.N-ref_length)];
+%     end
 
 
     % Split up input-arrays into relevant variables
     psi_s = x(1:2);
     psi_r = x(3:4);
-    T_ref = ref(1, 1:ctrl.N);
-    Psi_ref = ref(2, 1:ctrl.N);
+    T_ref = ref(1,1);%ref(1, 1:ctrl.N);
+    Psi_ref = ref(2,1);% 1:ctrl.N);
 
     % Create variables for faster execution
     A_1 = ctrl.A_1;
@@ -36,7 +36,7 @@ function [u_opt, ctrl, iter] = controller_nstep(x, u_prev, ref, ctrl)
         psi_s_kp1 = A_1*psi_s_kp1 + B_1*psi_r_kp1 + B_2*u;
         T_kp1 = T_factor*(psi_r_kp1(1)*psi_s_kp1(2) - psi_r_kp1(2)*psi_s_kp1(1));
         Psi_s_kp1 = norm(psi_s_kp1,2);
-        J_opt = J_opt + lam_T*(T_kp1-T_ref(i))^2 + (1-lam_T)*(Psi_s_kp1-Psi_ref(i))^2 + lam_u*norm(u_prev_temp-u,1);
+        J_opt = J_opt + lam_T*(T_kp1-T_ref)^2 + (1-lam_T)*(Psi_s_kp1-Psi_ref)^2 + lam_u*norm(u_prev_temp-u,1);
         u_prev_temp = u_prev;
     end
 
@@ -46,7 +46,7 @@ function [u_opt, ctrl, iter] = controller_nstep(x, u_prev, ref, ctrl)
     J = 0;
 
     % Run optimization
-    [U_opt, ~, iter] = branch_and_bound_nstep(J, J_opt, 1, ctrl.N, U, U_opt, x, u_prev, ref(:,1:ctrl.N), iter, ctrl);
+    [U_opt, ~, iter] = branch_and_bound_nstep_SDP(J, J_opt, 1, ctrl.N, U, U_opt, x, u_prev, ref(:,1), iter, ctrl);
 
     % Update remaining variables
     u_opt = U_opt(1:3);

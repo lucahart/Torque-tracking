@@ -12,25 +12,41 @@ function sys = systemSetup(sys_pre)
     I = 356; % current [A]
     P = 1.587e6; % active power [W]
     S = 2.035e6; % aparent power [VA]
-    f_base = 600/60; % base frequency of stator electric field [rps]
-    p = 1; % number of poles on rotor
-    f_m_si = 596/60; % frequency of mechanical rotor [rps]
+    f_base = 50; % base frequency of stator electric field [rps]
+    p = 2; % number of poles on rotor
+    f_m_si = 1494/60; % frequency of mechanical rotor [rps]
     
     % Machine parameters in pu system
     R_s = 0.0108;
     R_r = 0.0091;
-    X_m = 2.3489; %*3 ???
-    X_ls = 0.1493; %*3 ???
-    X_lr = 0.1104; %*3 ???
+    X_m = 2.349;
+    X_ls = 0.1493*2;
+    X_lr = 0.1104*2;
     v_dc = 1.930;
+    std = 5e-2; % noise standard deviation
+%     
+%     V = 6000;
+%     I = 98.9;
+%     P = 850e3;
+%     S = 1.028e6;
+%     f_base = 50;
+%     p = 2;
+%     f_m_si = 1494/60;
+%     R_s = .0057;
+%     R_r = .0045;
+%     X_ls = .0894;
+%     X_lr = .0930;
+%     X_m = 2.492;
+%     v_dc = 2e3;
+    
     X_s = X_m + X_ls;
     X_r = X_m + X_lr;
     D = X_s*X_r - X_m^2;
     w_base = 2*pi*f_base;
-    omega_m_si = 2*pi*f_m_si;
-    omega_r_si = p*omega_m_si;
-    omega_r = omega_r_si/w_base;
-    f_r = p*f_m_si/f_base;
+    omega_m_si = 2*pi*f_m_si; % mechanical angular speed of rotor in si
+    omega_r_si = p*omega_m_si; % electric angular speed of rotor in si
+    omega_r = omega_r_si/w_base; % electric angular speed of rotor in pu
+    f_r = p*f_m_si/f_base; % electric frequency of rotor
     
     % Parameters needed outside of setup
     sys.omega_r = omega_r;
@@ -42,7 +58,7 @@ function sys = systemSetup(sys_pre)
     sys.X_r = X_r;
     sys.w_base = w_base;
     sys.f_base = f_base;
-    sys.std = 5e-2; % noise standard deviation
+    sys.std = std;
     
     
     % *********************************************************************

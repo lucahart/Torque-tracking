@@ -12,8 +12,8 @@ ramps = {};
 % Quick setup of simulation parameters (set and remove whatever you want)
 sim.n_fundamentals = 50;
 sys.std = 0e-2;
-steps = {[1 1 .1], [1 2 1]};
-ramps = {[1 100e-6 0 .1 1], [1 3 1 5 0]};
+steps = {[1 20 .5], [1 30 1]};
+ramps = {[1 100e-6 0 10 1], [1 40 1 50 0]};
 
 % Physical system
 sys = systemSetup(sys);
@@ -22,7 +22,7 @@ sys = systemSetup(sys);
 sim = simulationSetup(sys, sim, 'exact');
 
 % Controller
-[ctrl, run_ctrl] = controllerSetup(sys, '1-step', ctrl);
+[ctrl, run_ctrl] = controllerSetup(sys, 'n-step', ctrl);
 
 
 %% Precalculations for faster simulation
@@ -40,12 +40,14 @@ B_sim = [
     sim.B_4;
 ];
 % Reference
-ref = generateReference(steps, ramps, n_controller_samples, int32(1/ctrl.T_s));
+ref = generateReference(steps, ramps, n_controller_samples, ...
+    int32(1/(ctrl.T_s*sys.f_r*sys.f_base)));
 
 %% Variables for plotting
 % Sampled with controller sampling time
 u_vec = nan*ones(3, n_controller_samples + 1);
 iter_count = nan*ones(1, n_controller_samples + 1);
+t_ctrl_vec = NaN(1, n_controller_samples + 1);
 
 % Sampled with simulation sampling time
 x_vec_sim = nan*ones(4, n_simulation_samples);
@@ -64,11 +66,10 @@ u_vec(:,1) = u_prev;
 t_sim = tic;
 for k = 1:n_controller_samples
     
-    % Add zero-mean measurement noise
-    y = x + normrnd(0,sys.std^2,length(x),1);
-    
     % Apply controller
-    [u, ctrl, iter] = run_ctrl(y, u_prev, ref(:,k:end), ctrl);
+    t_ctrl = tic;
+    [u, ctrl, iter] = run_ctrl(y, u_prev, ref(:,k+1:end), ctrl);
+    t_ctrl = toc(t_ctrl);
     
     % Apply physical system steps
     for j = 1:simulation_samples_per_controller_sample
@@ -79,6 +80,7 @@ for k = 1:n_controller_samples
     % Update parameters for plotting
     u_vec(:,k+1) = u;
     iter_count(k+1) = iter;
+    t_ctrl_vec(k+1) = t_ctrl;
     
     u_prev = u;
     
@@ -87,6 +89,7 @@ t_sim = toc(t_sim);
 
 % Set first iteration count to the simulated mean value
 iter_count(1) = mean(iter_count(2:end));
+t_ctrl_vec(1) = mean(t_ctrl_vec(2:end));
 
 
 %% Plotting

@@ -27,8 +27,14 @@ function ref = generateReference(steps, ramps, n_controller_samples, factor)
     % v2 \in [-1,1]: value that the ramp takes in the end
     for i = 1:length(ramps)
         ramp = ramps{i};
-        ref(ramp(1), ramp(2)*factor:ramp(4)*factor) = ...
-            linspace(ramp(3),ramp(5),(ramp(4)-ramp(2))*factor+1);
+        start = ramp(2)*factor;
+        if start <= 0
+            start = 1;
+        end
+        ref(ramp(1), start:ramp(4)*factor) = ...
+            linspace(ramp(3),ramp(5),ramp(4)*factor-start+1);
     end
+    
+    ref = [ref ref(:,end)];
     
 end
