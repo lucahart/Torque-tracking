@@ -66,6 +66,9 @@ u_vec(:,1) = u_prev;
 t_sim = tic;
 for k = 1:n_controller_samples
     
+    % Apply noise
+    y = x + normrnd(0, sys.std);
+    
     % Apply controller
     t_ctrl = tic;
     [u, ctrl, iter] = run_ctrl(y, u_prev, ref(:,k+1:end), ctrl);
