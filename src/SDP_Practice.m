@@ -2,11 +2,11 @@
 yalmip('clear');
 opt = optimoptions('fmincon','Display','off');
 eps = 1e-2;
-sdpopt = sdpsettings('solver', 'scs', 'verbose', 0, 'dualize', 0, 'scs.eps_abs', eps, 'scs.eps_rel', eps);
+sdpopt = sdpsettings('solver', 'scs', 'verbose', 1, 'dualize', 0, 'scs.eps_abs', eps, 'scs.eps_rel', eps);
 prec = 1e-3;
 
 %% Create random polynomial
-n = 3*8;
+n = 2;
 [a, s] = generatePolynomial(n);
 
 % Print polynomial
@@ -72,10 +72,6 @@ F = [
 F = [F, 0 <= diag(X) <= ub^2];
 % Constraint on off-diagonal terms (only holds for lb=-1 and ub=1)
 F = [F, lb*ub <= X(logical(triu(true(n+1))-diag(true(n+1,1)))) <= ub^2];
-% % Slow variant:
-% % for i = 3:n+1
-% %     F = [F, lb*ub <= X(2:i-1,i) <= ub^2];
-% % end
 % Perform optimization
 obj =  trace(Q*X);
 t2 = tic;
@@ -94,6 +90,23 @@ disp(['Time taken by full optimization [s]: ', num2str(t1), ' ']);
 disp(['Time taken for SDP [s]:              ', num2str(t2), ' ']);
 
 
-% C:\Users\dfzug\OneDrive\Desktop\Uni\ABB\src
-% C:\Users\dfzug\scs-matlab
-
+%% Minimization with l2-norm
+T_ref = 1;
+% Set optimization variable
+X = sdpvar(n+1);
+% Constraint on PSD matrix and constant multiplier to 1
+F = [
+    X >= 0,
+    X(1) == 1,
+];
+% Constraint on diagonal terms
+F = [F, 0 <= diag(X) <= ub^2];
+% Constraint on off-diagonal terms (only holds for lb=-1 and ub=1)
+F = [F, lb*ub <= X(logical(triu(true(n+1))-diag(true(n+1,1)))) <= ub^2];
+% Perform optimization
+obj =  norm(T_ref - trace(Q*X), 2)^2;
+t2 = tic;
+optimize(F, obj, sdpopt);
+t2 = toc(t2);
+% Calculate approximated value
+y_app = value(norm(T_ref-trace(Q*X),2));

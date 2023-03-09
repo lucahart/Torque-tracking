@@ -31,7 +31,7 @@ function [U_opt, J_opt, iter] = branch_and_bound_nstep_SDP(J, J_opt, i, N, U, U_
         if J_prime < J_opt
             if i < N
                 U(3*(i-1)+1:3*i) = u;
-                [U_opt, J_opt, iter] = branch_and_bound_nstep(J_prime, J_opt, i+1, N, U, U_opt, [psi_s_kp1;psi_r_kp1], u, ref, iter, ctrl);
+                [U_opt, J_opt, iter] = branch_and_bound_nstep_SDP(J_prime, J_opt, i+1, N, U, U_opt, [psi_s_kp1;psi_r_kp1], u, ref, iter, ctrl);
             else
                 U(3*(i-1)+1:3*i) = u;
                 U_opt = U;

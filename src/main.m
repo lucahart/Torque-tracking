@@ -22,7 +22,7 @@ sys = systemSetup(sys);
 sim = simulationSetup(sys, sim, 'exact');
 
 % Controller
-[ctrl, run_ctrl] = controllerSetup(sys, 'n-step', ctrl);
+[ctrl, run_ctrl] = controllerSetup(sys, 'n-step-SDP', ctrl);
 
 
 %% Precalculations for faster simulation

@@ -19,6 +19,10 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep.N = 3;
 
     % Multi-step controller with speed-up
+    ctrl_nstep_SDP.lam_u = 6.15e-4;
+    ctrl_nstep_SDP.lam_T = .052;
+    ctrl_nstep_SDP.T_s = 25e-6;
+    ctrl_nstep_SDP.N = 3;
 
 
 
@@ -36,7 +40,7 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
 
     if ctrl_type ~= "1-step" && ...
             ctrl_type ~= "n-step" && ...
-            ctrl_type ~= "n-step+su"
+            ctrl_type ~= "n-step-SDP"
         error('Choose a valid controller type.');
     end
 
@@ -93,8 +97,26 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     % Multi-step controller with speed-up
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    if ctrl_type == "n-step+su"
-        ctrl = ctrl_nstepsu;
+    if ctrl_type == "n-step-SDP"
+        % Set all previously specified parameters
+        ctrl = ctrl_nstep_SDP;
+
+        % Calculate discrete-time matrices
+        ctrl.A_1 = eye(2) + sys.F_1*ctrl.T_s*sys.w_base;
+        ctrl.A_2 = eye(2) + sys.F_2*ctrl.T_s*sys.w_base;
+        ctrl.B_1 = sys.G_1*ctrl.T_s*sys.w_base;
+        ctrl.B_2 = sys.G_2*ctrl.T_s*sys.w_base;
+        ctrl.B_3 = sys.G_3*ctrl.T_s*sys.w_base;
+        ctrl.B_4 = sys.G_4*ctrl.T_s*sys.w_base;
+
+        % Generate the set U = {-1,0,1}^3
+        u = [-1, 0, 1];
+        [U1, U2, U3] = ndgrid(u, u, u);
+        ctrl.U_set = [U1(:), U2(:), U3(:)]';
+
+        % Set the run function that executes the control algorithm in
+        % simulation
+        run_ctrl = @controller_nstep_SDP;
     end  
 
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
