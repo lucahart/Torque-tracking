@@ -39,6 +39,7 @@ B_sim = [
     sim.B_2;
     sim.B_4;
 ];
+ctrl.A_sim = A_sim; ctrl.B_sim = B_sim;
 % Reference
 ref = generateReference(steps, ramps, n_controller_samples, ...
     int32(1/(ctrl.T_s*sys.f_r*sys.f_base)));
@@ -65,6 +66,10 @@ u_vec(:,1) = u_prev;
 % Simulate
 t_sim = tic;
 for k = 1:n_controller_samples
+    
+    if k == int32(n_controller_samples*.1)
+        disp(k*ctrl.T_s);
+    end
     
     % Apply noise
     y = x + normrnd(0, sys.std);
