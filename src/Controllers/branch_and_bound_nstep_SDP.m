@@ -25,7 +25,8 @@ function [U_opt, J_opt, iter] = branch_and_bound_nstep_SDP(J, J_opt, i, N, U, U_
         psi_s_kp1 = A_1*psi_s + B_1*psi_r + B_2*u;
         T_kp1 = T_factor*(psi_r_kp1(1)*psi_s_kp1(2) - psi_r_kp1(2)*psi_s_kp1(1));
         Psi_s_kp1 = norm(psi_s_kp1,2);
-        J_prime = J + lam_T*(T_kp1-T_ref)^2 + (1-lam_T)*(Psi_s_kp1-Psi_ref)^2 + lam_u*norm(u_prev-u,1);
+%         J_prime = J + lam_T*(T_kp1-T_ref)^2 + (1-lam_T)*(Psi_s_kp1-Psi_ref)^2 + lam_u*norm(u_prev-u,1);
+        J_prime = J + lam_T*norm(T_kp1-T_ref,2)^2 + (1-lam_T)*norm(Psi_s_kp1^2-Psi_ref^2,2)^2 + lam_u*norm(u_prev-u,1);
         % Advance in branche or update optimal cost if condition is
         % satisfied
         if J_prime < J_opt

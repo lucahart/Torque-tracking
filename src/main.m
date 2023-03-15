@@ -67,8 +67,11 @@ u_vec(:,1) = u_prev;
 t_sim = tic;
 for k = 1:n_controller_samples
     
-    if k == int32(n_controller_samples*.1)
-        disp(k*ctrl.T_s);
+%     if k == int32(n_controller_samples*.1 + 2)
+%         disp(double(k)*ctrl.T_s);
+%     end
+    if k == 16058
+        disp(k);
     end
     
     % Apply noise

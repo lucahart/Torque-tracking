@@ -37,7 +37,7 @@ function [u_opt, ctrl, iter] = controller_nstep(x, u_prev, ref, ctrl)
         T_kp1 = T_factor*(psi_r_kp1(1)*psi_s_kp1(2) - psi_r_kp1(2)*psi_s_kp1(1));
         Psi_s_kp1 = norm(psi_s_kp1,2);
         J_opt = J_opt + lam_T*(T_kp1-T_ref(i))^2 + (1-lam_T)*(Psi_s_kp1-Psi_ref(i))^2 + lam_u*norm(u_prev_temp-u,1);
-        u_prev_temp = u_prev;
+        u_prev_temp = u;
     end
 
     % Set all other initial values
