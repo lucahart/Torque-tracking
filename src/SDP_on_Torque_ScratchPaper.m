@@ -53,8 +53,14 @@ m = 3;
 
 %% Values
 N = ctrl.N;
-A_sim = ctrl.A_sim;
-B_sim = ctrl.B_sim;
+A_sim = [
+    ctrl.A_1 ctrl.B_1;
+    ctrl.B_3 ctrl.A_2;
+];
+B_sim = [
+    ctrl.B_2;
+    ctrl.B_4;
+];
 % T_ref = 1;
 % Psi_ref = 1;
 % lb = -1;

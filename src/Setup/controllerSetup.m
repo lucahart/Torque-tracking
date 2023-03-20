@@ -96,7 +96,7 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
 
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     % Multi-step controller with speed-up
-    % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^    
     if ctrl_type == "n-step-SDP"
         % Set all previously specified parameters
         ctrl = ctrl_nstep_SDP;
@@ -117,6 +117,9 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
         % Set the run function that executes the control algorithm in
         % simulation
         run_ctrl = @controller_nstep_SDP;
+        
+        % SDP setup
+        ctrl.sdp = sdpSetup(ctrl);
     end  
 
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
