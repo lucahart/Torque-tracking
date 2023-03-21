@@ -16,6 +16,11 @@ function ref = generateReference(steps, ramps, n_controller_samples, factor)
     % v \in [-1,1]: value that the reference takes at the step
     for i = 1:length(steps)
         step = steps{i};
+        % Avoid extending the ref. over the simulation length
+        if step(2)*factor > n_controller_samples
+            break;
+        end
+        
         ref(step(1), step(2)*factor:end) = step(3);
     end
     
@@ -28,13 +33,19 @@ function ref = generateReference(steps, ramps, n_controller_samples, factor)
     for i = 1:length(ramps)
         ramp = ramps{i};
         start = ramp(2)*factor;
+        % Avoid extending the ref. over the simulation length
+        if ramp(4)*factor > n_controller_samples
+            break;
+        end
+        % Avoid rounding errors
         if start <= 0
             start = 1;
         end
+        
         ref(ramp(1), start:ramp(4)*factor) = ...
             linspace(ramp(3),ramp(5),ramp(4)*factor-start+1);
     end
     
-    ref = [ref ref(:,end)];
+    ref = [ref(:,1) ref];
     
 end

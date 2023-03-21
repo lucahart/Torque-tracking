@@ -21,11 +21,11 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
     % Multi-step controller with speed-up
     ctrl_nstep_SDP.lam_u = 6.15e-4;
     ctrl_nstep_SDP.lam_T = .052;
-    ctrl_nstep_SDP.T_s = 25e-6;
-    ctrl_nstep_SDP.N = 3;
-    ctrl_nstep_SDP.node_limit = 200;
-    ctrl_nstep_SDP.estimate = 'all'; % 'all', 'first column', 'diagonal', 'eigen vector', 'eigen vector uniform'
-    ctrl_nstep_SDP.type = 'ed guess + sdp'; % 'ed guess', 'ed guess + sdp', 'ed & sdp guess'
+    ctrl_nstep_SDP.T_s = 100e-6;
+    ctrl_nstep_SDP.N = 5;
+    ctrl_nstep_SDP.node_limit = 100;
+    ctrl_nstep_SDP.estimate = 'first column'; % 'all', 'first column', 'diagonal', 'eigen vector', 'eigen vector uniform'
+    ctrl_nstep_SDP.type = 'ed guess'; % 'ed guess', 'ed guess + sdp', 'ed & sdp guess'
 
     
     % *********************************************************************

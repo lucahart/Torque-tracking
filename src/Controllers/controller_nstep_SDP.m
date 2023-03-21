@@ -9,7 +9,7 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
     
     %% Run controller
     if ctrl.type == "ed guess + sdp"
-        costs = zeros(6,1); % J_bnb and J_sdp
+        costs = zeros(3,1); % J_bnb, J_ed, J_sdp
         
         % Set initial values from educated guess
         U_ed = ctrl.U_ed;
@@ -43,11 +43,11 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
                 U_opt = U_bnb;
                 J_opt = J_bnb;
             end
-            costs(3:6) = J_sdp';
+            costs(3) = J_sdp';
         else
             U_opt = U_bnb;
             J_opt = J_bnb;
-            costs(3:6) = NaN(4,1);
+            costs(3) = NaN(1,1);
         end
         iter(1) = iter_bnb;
         nodes(1) = nodes_bnb;
@@ -104,8 +104,6 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
     end
     
     %% Post processing
-    costs(1) = J_opt;
-
     % Update remaining variables
     u_opt = U_opt(1:3);
     if ctrl.N > 1
