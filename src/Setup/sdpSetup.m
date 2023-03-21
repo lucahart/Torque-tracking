@@ -88,7 +88,8 @@ sdp.F = [sdp.F, 0 <= diag(sdp.X) <= 1];
 % Constraint on off-diagonal terms (only holds for lb=-1 and ub=1)
 sdp.F = [sdp.F, -1 <= sdp.X(logical(triu(true(3*N+1))-diag(true(3*N+1,1)))) <= 1];
 
-%
+% Init part of cost function that is not dependent on the state x or
+% previous input u_prev
 sdp.J0 = 0;
 for i = 2:3*N-2
     Y = [zeros(1,i-1), -1, zeros(1,2), 1, zeros(1, 3*N+1-(i+3)); zeros(3*N,3*N+1)];

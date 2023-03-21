@@ -2,6 +2,13 @@ function [U_opt, J_opt, iter, nodes] = branch_and_bound_nstep_SDP(J, J_opt, i, N
 
 
 
+    % Terminate if node-limit is reached
+    if nodes >= ctrl.node_limit
+        return 
+    else
+        nodes = nodes + 1;
+    end
+
     % Split up input-arrays into relevant variables
     psi_s = x(1:2);
     psi_r = x(3:4);
@@ -28,7 +35,6 @@ function [U_opt, J_opt, iter, nodes] = branch_and_bound_nstep_SDP(J, J_opt, i, N
         J_prime = J + lam_T*norm(T_kp1-T_ref,2)^2 + (1-lam_T)*norm(Psi_s_kp1^2-Psi_ref^2,2)^2 + lam_u*norm(u_prev-u,1);
         % Advance in branche or update optimal cost if condition is satisfied
         if J_prime < J_opt
-            nodes = nodes + 1;
             if i < N
                 U(3*(i-1)+1:3*i) = u;
                 [U_opt, J_opt, iter, nodes] = branch_and_bound_nstep_SDP(J_prime, J_opt, i+1, N, U, U_opt, [psi_s_kp1;psi_r_kp1], u, ref, iter, nodes, ctrl);

@@ -76,7 +76,7 @@ for k = 1:n_controller_samples
     
     % Apply controller
     t_ctrl = tic;
-    [u, ctrl, iter, nodes, times, cost] = run_ctrl(y, u_prev, ref(:,k+1:end), ctrl, ex_sdp(k));
+    [u, ctrl, iter, nodes, times, cost] = run_ctrl(y, u_prev, ref(:,k+1:end), ctrl);
     t_ctrl = toc(t_ctrl);
     
     % Apply physical system steps

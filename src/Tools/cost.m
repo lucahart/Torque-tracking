@@ -1,8 +1,5 @@
 function J = cost(ctrl, x, u_prev, ref, U)
 
-%TODO: Implement that you can give multiple U, e.g. U = [u_hat1; u_hat2],
-%would return a vector of costs J = [J_hat1, J_hat2].
-
 %     % Split up input-arrays into relevant variables
 %     psi_s = x(1:2);
 %     psi_r = x(3:4);
@@ -33,9 +30,4 @@ function J = cost(ctrl, x, u_prev, ref, U)
             ctrl.lam_u*sum(abs(u_prev-u),1);
         u_prev = u;
     end
-
-
-
-
-
 end

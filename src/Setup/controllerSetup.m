@@ -23,10 +23,11 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep_SDP.lam_T = .052;
     ctrl_nstep_SDP.T_s = 25e-6;
     ctrl_nstep_SDP.N = 3;
+    ctrl_nstep_SDP.node_limit = 200;
+    ctrl_nstep_SDP.estimate = 'all'; % 'all', 'first column', 'diagonal', 'eigen vector', 'eigen vector uniform'
+    ctrl_nstep_SDP.type = 'ed guess + sdp'; % 'ed guess', 'ed guess + sdp', 'ed & sdp guess'
 
-
-
-
+    
     % *********************************************************************
     %% Do not make changes to this section
     % *********************************************************************
