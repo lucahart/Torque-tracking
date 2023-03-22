@@ -1,4 +1,4 @@
-% clear all;
+clear;
 
 %% Setup
 % Create empty structs to avoid errors
@@ -7,21 +7,20 @@ sim = struct();
 ctrl0 = struct();
 ctrl1 = struct();
 ctrl2 = struct();
-steps = {};
-ramps = {};
+% steps = {};
+% ramps = {};
 
+% Number of controllers that are simulated
+n_c = 3;
+
+% -------------------------------------------------------------------------
 % Quick setup of simulation parameters (set and remove whatever you want)
+% -------------------------------------------------------------------------
 sim.n_fundamentals = 10;
-sys.std = 0e-2;
-n_c = 3; % number of controllers that are simulated
-
+% sys.std = 0e-4;
 ctrl0.node_limit = inf;
 ctrl2.type = 'ed guess + sdp';
-
-steps = {[1 3 .2], [1 7 1]};
-ramps = {[1 100e-6 0 2 1], [1 8 1 10 0]};
-execute_sdp = [1:50,16000:16100,24050:24350];
-
+% -------------------------------------------------------------------------
 
 % Physical system
 sys = systemSetup(sys);
@@ -50,10 +49,8 @@ B_sim = [
     sim.B_4;
 ];
 % Reference
-ref = generateReference(steps, ramps, n_controller_samples, ...
+ref = generateReference(sim.steps, sim.ramps, n_controller_samples, ...
     int32(1/(ctrl0.T_s*sys.f_r*sys.f_base)));
-ex_sdp = zeros(1,n_controller_samples);
-ex_sdp(execute_sdp) = 1;
 
 %% Variables for plotting
 % Sampled with controller sampling time
@@ -78,17 +75,10 @@ u_vec(:,:,1) = u_prev;
 
 % Simulate
 t_sim = tic;
-for k = 1:n_controller_samples    
-    
-%     TODO: compare different controllers by always applying the optimal
-%     controller and see how the costs change
-
-    if k == 2
-        disp(k); % TODO: see why the sdp doesn't go down here? Is that really better? What would ctrl0 do?
-    end
+for k = 1:n_controller_samples
     
     % Apply noise
-    y = x + normrnd(0, sys.std, size(x));
+    y = x + normrnd(0, sys.std, 4, 1);
     
     % Apply controller
     [u0, ctrl0, iter0, nodes0, times0, cost0] = run_ctrl0(y(:,1), u_prev(:,1), ref(:,k+1:end), ctrl0);
@@ -112,6 +102,12 @@ for k = 1:n_controller_samples
     % Update u_prev
     u_prev = u;
     
+    % If only opt solution is applied the states for the controller are
+    % reset to the optimal dynamics every controller sample
+    if sim.apply_only_opt
+        x = x(:,1).*ones(4,n_c);
+        u_prev = u_prev(:,1).*ones(3,n_c);
+    end
 end
 t_sim = toc(t_sim);
 

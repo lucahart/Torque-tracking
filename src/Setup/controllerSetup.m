@@ -13,13 +13,13 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_1step.N = 1;
 
     % Multi-step controller
-    ctrl_nstep.lam_u = 6.15e-4; % 1.15e-4 if lam_T = .1 and 2.7e-4 if lam_T = .5 to hold 230-240Hz
+    ctrl_nstep.lam_u = 6.15e-4; % 6.15e-4
     ctrl_nstep.lam_T = .052;
     ctrl_nstep.T_s = 25e-6;
     ctrl_nstep.N = 3;
 
     % Multi-step controller with speed-up
-    ctrl_nstep_SDP.lam_u = 6.15e-4;
+    ctrl_nstep_SDP.lam_u = 6.15e-4; % 5e-4 for N = 1
     ctrl_nstep_SDP.lam_T = .052;
     ctrl_nstep_SDP.T_s = 100e-6;
     ctrl_nstep_SDP.N = 5;
