@@ -35,7 +35,7 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
             [J_sdp, idx] = min(J_hat);
             U_sdp = U_hat(:,idx);
             % Take best guess
-            if J_sdp > J_bnb
+            if J_sdp < J_bnb
                 disp('Used SDP');
                 U_opt = U_sdp;
                 J_opt = J_sdp;

@@ -138,24 +138,29 @@ ylabel('Torque [pu] / # Nodes [1000]')
 legend('Torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
 grid on;
 
-% Accumulative Cost
-nc = reshape([zeros(1,length(node_count)); (cost_vec(1,:)); zeros(1,length(node_count))],1,3*length(node_count));
-tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-% nc2 = reshape([zeros(1,length(execute_sdp)); (cost_vec(2,execute_sdp+1)-cost_vec(4,execute_sdp+1))./cost_vec(4,execute_sdp+1); zeros(1,length(execute_sdp))],1,3*length(execute_sdp));
-% tc2 = reshape([t_ctrl_vec(execute_sdp+1);t_ctrl_vec(execute_sdp+1);t_ctrl_vec(execute_sdp+1)],1,3*length(execute_sdp));
+% Accumulated Cost
+nc0 = cost_vec(1,:);
+nc1 = cost_vec(3,:);
+nc2 = min(cost_vec([5,7],:));
+for k = 2:length(nc0)
+    nc0(k) = nc0(k) + nc0(k-1);
+    nc1(k) = nc1(k) + nc1(k-1);
+    nc2(k) = nc2(k) + nc2(k-1);
+end
 
 figure(8);
 plot(t_ctrl_vec, ref(1,1:end-1),'k');
 hold on;
-plot(tc,nc*10,'r');
-% plot(tc2,nc2/100,'b');
+plot(t_ctrl_vec,nc0,'r');
+plot(t_ctrl_vec,nc1,'b');
+plot(t_ctrl_vec,nc2,'g');
 hold off;
 
-title('Cost')
+title('Accumulated Cost')
 xlim([0,t_max]);
 xlabel('time [s]')
-ylabel('Torque [pu] / # Cost [10]')
-legend('Torque reference','Cost');
+ylabel('Torque [pu] / Accumulated Cost')
+legend('Torque reference','Opt', 'Ed guess', 'Ed guess + sdp');
 grid on;
 
 
