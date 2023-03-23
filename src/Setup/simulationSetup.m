@@ -11,7 +11,7 @@ function sim = simulationSetup(sys, sim_pre, discretization)
     sim.n_fundamentals = 10; % number of fundamentals to simulate
     sim.T_sim = .5e-6; % simulation sampling interval [s], please choose 
                        % such that ctrl.T_s = n*sim.T_sim, n is integer
-    sim.apply_only_opt = 0; % 1 for resetting to opt. dynamics every 
+    sim.apply_only_opt = 1; % 1 for resetting to opt. dynamics every 
                        % controller sample, 0 otherwise
     sim.steps = {[1 3 .2], [1 7 1]};
     sim.ramps = {[1 100e-6 0 2 1], [1 8 1 10 0]};

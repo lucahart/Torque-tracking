@@ -26,6 +26,7 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep_SDP.node_limit = 100;
     ctrl_nstep_SDP.estimate = 'first column'; % 'all', 'first column', 'diagonal', 'eigen vector', 'eigen vector uniform'
     ctrl_nstep_SDP.type = 'ed guess'; % 'ed guess', 'ed guess + sdp', 'ed & sdp guess'
+    ctrl_nstep_SDP.eps = 1e-12; % J_opt - J_prime > eps for update of U_opt in branch-and-bound algorithm (handles numeric unprecisions)
 
     
     % *********************************************************************
