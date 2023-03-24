@@ -60,13 +60,13 @@ grid on;
 T_sim = 1/sys.pf*sys.X_m/sys.D*(squeeze(psi_r_sim(1,:,:)).*squeeze(psi_s_sim(2,:,:)) - squeeze(psi_r_sim(2,:,:)).*squeeze(psi_s_sim(1,:,:)));
 
 figure(3);
-plot(t_sim_vec, T_sim);
-hold on;
 plot(t_sim_vec, ref_sim(1,:), 'k')
+hold on;
+plot(t_sim_vec, T_sim);
 hold off;
 
 title('Torque');
-legend('No node limit', 'Only ed guess', 'Ed guess + sdp');
+legend('Reference', 'Ed guess', 'Opt guess');
 ylim([0,1.2]);
 xlim([0,t_max]);
 xlabel('time [s]');
@@ -87,17 +87,6 @@ ylim([0,1.2]);
 xlim([0,t_max]);
 grid on;
 
-% % Plot currents
-% i_s = (sys.K_inv/(sys.X_s - sys.X_m/sys.X_r*sys.X_m)).*(psi_s_ctrl - sys.X_m/sys.X_r.*psi_r_ctrl);
-% 
-% figure(5);
-% plot(t_ctrl_vec, i_s(:,1:n_controller_samples), 'b');
-% 
-% title('Currents');
-% ylim([-1.2,1.2]);
-% xlim([0,t_max]);
-% grid on;
-
 % Iterations (only useful to compare performance of different guesses)
 ic = reshape([zeros(1,length(iter_count)); iter_count(1,:); zeros(1,length(iter_count))],1,3*length(iter_count));
 tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
@@ -115,7 +104,7 @@ title('Iterations')
 xlim([0,t_max]);
 xlabel('time [s]')
 ylabel('Torque [pu] / # Iterations [10]')
-legend('Torque reference','Opt guess','Ed guess');
+legend('Torque reference', 'Ed guess', 'Opt guess');
 grid on;
 
 % Nodes
@@ -135,7 +124,7 @@ title('Nodes')
 xlim([0,t_max]);
 xlabel('time [s]')
 ylabel('Torque [pu] / # Nodes [1e4]')
-legend('Torque reference','Opt guess','Ed guess');
+legend('Torque reference', 'Ed guess', 'Opt guess');
 grid on;
 
 % Time
@@ -155,29 +144,7 @@ title('Time')
 xlim([0,t_max]);
 xlabel('time [s]')
 ylabel('Torque [pu] / # Time [s]')
-legend('Torque reference','Opt guess','Ed guess');
-grid on;
-
-% Accumulated Cost
-J_acc_0 = cost_vec(1,:);
-J_acc_1 = cost_vec(3,:);
-for k = 2:length(J_acc_0)
-    J_acc_0(k) = J_acc_0(k) + J_acc_0(k-1);
-    J_acc_1(k) = J_acc_1(k) + J_acc_1(k-1);
-end
-
-figure(9);
-plot(t_ctrl_vec, ref_ctrl,'k');
-hold on;
-plot(t_ctrl_vec,J_acc_0,'r');
-plot(t_ctrl_vec,J_acc_1,'b');
-hold off;
-
-title('Accumulated Cost')
-xlim([0,t_max]);
-xlabel('time [s]')
-ylabel('Torque [pu] / Accumulated Cost')
-legend('Torque reference','Opt', 'Ed guess', 'Ed guess + sdp');
+legend('Torque reference', 'Ed guess', 'Opt guess');
 grid on;
 end
 

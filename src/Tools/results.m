@@ -1,4 +1,9 @@
 function [xvec_ss,uvec_ss] = results(xvec,uvec,sph_count,Tsim,number_of_samples_per_fundamental,controller_samples_per_fundamental,ramp2start,periods_to_wait_for_ss,K_inv,sys)
+% RESULTS is a deprecated function that is not in use anymore. It can
+% return the current TDD of a specified current and vector.
+
+warning('The results-function is deprecated.');
+
 
 xvec_ss = xvec;
 uvec_ss = uvec;

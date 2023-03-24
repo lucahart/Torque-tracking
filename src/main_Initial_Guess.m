@@ -30,9 +30,9 @@ sys = systemSetup(sys);
 sim = simulationSetup(sys, sim, 'exact');
 
 % Controllers
-[ctrl0, run_ctrl0] = controllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, J_opt as reference
-[ctrl1, run_ctrl1] = controllerSetup(sys, 'n-step-SDP', ctrl1); % controller with only ed guess
-[ctrl2, run_ctrl2] = controllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed guess and sdp
+[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, J_opt as reference
+[ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1); % controller with only ed guess
+[ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed guess and sdp
 
 
 %% Precalculations for faster simulation

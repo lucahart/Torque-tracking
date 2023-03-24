@@ -1,5 +1,14 @@
 function [u_hat] = run_sdp(ctrl, x, u_prev, ref)
-
+    % RUN_SDP utilizes semit-definite programming (SDP) relaxations to
+    % solve for an approximatelly optimal input sequence.
+    % Inputs:
+    %   ctrl: Struct with all controller information. The controller is
+    %     required to by of type 'n-step-SDP'.
+    %   x: Current state of system.
+    %   u_prev: Previously applied input u(k-1).
+    %   ref: Torque- and absolute stator flux reference.
+    % Outputs:
+    %   u_hat: Approximated optimal input sequence.
 
 
     %% Assigning function parameters
@@ -48,14 +57,15 @@ function [u_hat] = run_sdp(ctrl, x, u_prev, ref)
             % Round first column
             u_hat = sign(value(X(1)))*round(value(X(2:end,1)));
         case "diagonal"
-            % round sqrt of diagonal
+            % Round sqrt of diagonal
             u_hat = sign(value(X(1)))*...
                 round(sqrt(diag(value(X(2:end,2:end)))));
         case "eigen vector"
-            % round normally
+            % Round first eigenvector normally
             u_hat = round(v1);
         case "eigen vector uniform"
-            % round with equal distribution over all numbers
+            % Round first eigenvector with equal distribution over all
+            % numbers (empirically showed to be slightly better than rest)
             u_hat = zeros(3*N,1);
             u_hat(v1 > 1/3) = 1;
             u_hat(v1 < -1/3) = -1;
@@ -65,9 +75,9 @@ function [u_hat] = run_sdp(ctrl, x, u_prev, ref)
             % Round sqrt of diagonal
             u_hat2 = sign(value(X(1)))*...
                 round(sqrt(diag(value(X(2:end,2:end)))));
-            % Round normally
+            % Round first eigen vector normally
             u_hat3 = round(v1);
-            % Round with equal distribution over all numbers
+            % Round first eigen vector with equal distribution
             u_hat4 = zeros(3*N,1);
             u_hat4(v1 > 1/3) = 1;
             u_hat4(v1 < -1/3) = -1;

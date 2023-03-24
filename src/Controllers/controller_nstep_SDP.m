@@ -1,5 +1,30 @@
 function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_prev, ref, ctrl)
-
+    % CONTROLLER_NSTEP_SDP is a model predictive controller for calculating
+    % inputs that are optimal in regard of the cost function.
+    % There are different possibilities for computing the optimal solution.
+    % All information about how the controller is executed is contained in
+    % the ctrl-struct. A comprehensive list with all possible 
+    % specifications is provided in the controllerSetup documentation.
+    % Relevant parameters are ctrl.node_limit, ctrl.type, ctrl.estimate.
+    % Inputs:
+    %   x: Current state of system.
+    %   u_prev: Previously applied input u(k-1).
+    %   ref: Torque- and absolute stator flux references.
+    %   ctrl: Struct containing all information about the controller.
+    % Outputs:
+    %   u_opt: Input computed by controller that is optimal with respect to
+    %     the specified cost function. Note that solutions can be 
+    %     suboptimal if ctrl.node_limit < inf.
+    %   ctrl: Struct with all information about the controller. Can
+    %     possibly change during execution of the controller.
+    %   iter: Number of iterations taken by the branch-and-bound algorithm.
+    %     Iterations specify how often the optimal solution was updates
+    %     throughout the solving process of the optimization problem.
+    %   nodes: Number of nodes traversed by the branch-and-bound algorithm
+    %     while solving the MPC's integer optimization problem.
+    %   times: Time that the computation of the branch-and-bound algorithm
+    %     took in MATLAB.
+    %   costs: Scalar or vector of all costs that were computed.
 
 
     % Initialize measurement variables (except for costs)
@@ -23,7 +48,7 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
 
         % Run optimization
         t = tic;
-        [U_bnb, J_bnb, iter_bnb, nodes_bnb] = branch_and_bound_nstep_SDP(J, J_ed, 1, ctrl.N, U, U_ed, x, u_prev, ref(:,1), iter_bnb, nodes_bnb, ctrl);
+        [U_bnb, J_bnb, iter_bnb, nodes_bnb] = branch_and_bound_nstep_SDP(J, J_ed, 0, ctrl.N, U, U_ed, x, u_prev, ref(:,1), iter_bnb, nodes_bnb, ctrl);
         times(1) = toc(t);
         
         if nodes_bnb >= ctrl.node_limit
@@ -36,7 +61,9 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
             U_sdp = U_hat(:,idx);
             % Take best guess
             if J_sdp < J_bnb
-                disp('Used SDP');
+                if ctrl.volatile
+                    disp('Used SDP');
+                end
                 U_opt = U_sdp;
                 J_opt = J_sdp;
             else
@@ -73,7 +100,7 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
         
         % Run optimization
         t = tic;
-        [U_opt, J_opt, iter_sdp, nodes_sdp] = branch_and_bound_nstep_SDP(J, J_sdp, 1, ctrl.N, U, U_sdp, x, u_prev, ref(:,1), iter_sdp, nodes_sdp, ctrl);
+        [U_opt, J_opt, iter_sdp, nodes_sdp] = branch_and_bound_nstep_SDP(J, J_sdp, 0, ctrl.N, U, U_sdp, x, u_prev, ref(:,1), iter_sdp, nodes_sdp, ctrl);
         times(2) = toc(t);
         iter(2) = iter_sdp;
         nodes(2) = nodes_sdp;
@@ -95,7 +122,7 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
 
         % Run optimization
         t = tic;
-        [U_opt, J_opt, iter_ed, nodes_ed] = branch_and_bound_nstep_SDP(J, J_ed, 1, ctrl.N, U, U_ed, x, u_prev, ref(:,1), iter_ed, nodes_ed, ctrl);
+        [U_opt, J_opt, iter_ed, nodes_ed] = branch_and_bound_nstep_SDP(J, J_ed, 0, ctrl.N, U, U_ed, x, u_prev, ref(:,1), iter_ed, nodes_ed, ctrl);
         times(1) = toc(t);
         iter(1) = iter_ed;
         nodes(1) = nodes_ed;

@@ -1,4 +1,8 @@
 function [u_opt, ctrl, iter] = controller_nstep(x, u_prev, ref, ctrl)
+    % CONTROLLER_NSTEP is deprecated. It uses a full-horizon reference.
+    % Please use CONTROLLER_NSTEP_SDP to only take the reference of k+1
+    % into consideration. CONTROLLER_NSTEP_SDP is able to fully replace
+    % this function.
 
 
     % Extend reference if array not long enough

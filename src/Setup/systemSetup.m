@@ -1,14 +1,18 @@
-function sys = systemSetup(sys_pre)
+function sys = SystemSetup(sys_pre)
     % Setup of the physical system.
     % Input:
     %   sys_pre (optional): Pre-set system parameters. Everything that is set in
     %     this struct will overwrite the default parameters.
     % Output:
     %   sys: Struct containing all information about the physical system.
+    %
+    % Parameters: Find detailled explanations in the book "Model Predictive
+    %   Control of High Power Converters and Industrial Drives" by Tobias
+    %   Geyer.
     
    
     % *********************************************************************
-    %% Make changes to this section (System parameters)
+    %% Default system parameters (Make changes to this section)
     % *********************************************************************
     
     % Machine parameters is SI unit system

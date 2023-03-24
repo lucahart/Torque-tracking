@@ -1,20 +1,12 @@
 function J = cost(ctrl, x, u_prev, ref, U)
-
-%     % Split up input-arrays into relevant variables
-%     psi_s = x(1:2);
-%     psi_r = x(3:4);
-%     T_ref = ref(1,1);%ref(1, 1:ctrl.N);
-%     Psi_ref = ref(2,1);% 1:ctrl.N);
-% 
-%     % Create variables for faster execution
-%     A_1 = ctrl.A_1;
-%     A_2 = ctrl.A_2;
-%     B_1 = ctrl.B_1;
-%     B_2 = ctrl.B_2;
-%     B_3 = ctrl.B_3;
-%     T_factor = ctrl.T_factor;
-%     lam_T = ctrl.lam_T;
-%     lam_u = ctrl.lam_u;
+    % COST computes the cost of applying an input sequence U at the
+    % specified state.
+    % Input:
+    %   ctrl: Struct that contains all information about the controller.
+    %   x: Current state of system.
+    %   u_prev: Previous control input u(k-1).
+    %   ref: Torque- and absolute stator flux reference.
+    %   U: Input sequence to compute the cost for.
 
     J = zeros(1,size(U,2));
     psi_r = x(3:4).*ones(2,size(U,2));
@@ -30,7 +22,6 @@ function J = cost(ctrl, x, u_prev, ref, U)
         J = J + ctrl.lam_T*(ref(1) - T_kp1).^2 + ...
             (1-ctrl.lam_T)*(ref(2)^2 - Psi_s_kp1.^2).^2 + ...
             ctrl.lam_u*sum(abs(u_prev-u),1);
-%         disp(J*1e3);
         u_prev = u;
     end
 end

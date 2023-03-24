@@ -1,6 +1,4 @@
 %% Setup
-% Display parameters
-display = displaySetup;
 
 % Some parameters for easier plotting and printing
 % --- Time parameters -----------------------------------------------------

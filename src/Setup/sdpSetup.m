@@ -1,11 +1,18 @@
 function sdp = sdpSetup(ctrl)
-    % Setup of the semi-definite program (SDP).
+    % SDPSETUP sets up a struct containing all inforamtion about the
+    % semi-definite programming (SDP) relaxation.
+    %
     % Input:
     %   ctrl: Struct contraining all information abou the controller (See
     %     ctrlSetup).
     % Output:
     %   sdp: Struct containing all precalculations and parameters to speed
     %     up the solving process of the SDP.
+    %
+    % Parameters:
+    %   epsilon: Maximum inprecision of solution.
+    %     Default: epsilon = 1e-4
+    %   sdp.sdpopt: Different settings of the optimizer.
     
     
     % *********************************************************************

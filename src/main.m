@@ -19,19 +19,20 @@ n_c = 3;
 sim.n_fundamentals = 10;
 sys.std = 0e-4;
 ctrl0.node_limit = inf;
+ctrl1.volatile = 1;
 ctrl2.type = 'ed guess + sdp';
 % -------------------------------------------------------------------------
 
 % Physical system
-sys = systemSetup(sys);
+sys = SystemSetup(sys);
 
 % Simulation
-sim = simulationSetup(sys, sim, 'exact');
+sim = SimulationSetup(sys, sim, 'exact');
 
 % Controllers
-[ctrl0, run_ctrl0] = controllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, J_opt as reference
-[ctrl1, run_ctrl1] = controllerSetup(sys, 'n-step-SDP', ctrl1); % controller with only ed guess
-[ctrl2, run_ctrl2] = controllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed guess and sdp
+[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, J_opt as reference
+[ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1); % controller with only ed guess
+[ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed guess and sdp
 
 
 %% Precalculations for faster simulation
@@ -49,7 +50,7 @@ B_sim = [
     sim.B_4;
 ];
 % Reference
-ref = generateReference(sim.steps, sim.ramps, n_controller_samples, ...
+ref = generate_reference(sim.steps, sim.ramps, n_controller_samples, ...
     int32(1/(ctrl0.T_s*sys.f_r*sys.f_base)));
 
 %% Variables for plotting

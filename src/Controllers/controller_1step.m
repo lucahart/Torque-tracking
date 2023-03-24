@@ -1,6 +1,24 @@
-function [u_opt, ctrl, iter] = controller_1step(x, u_prev, ref, ctrl)
+function [u_opt, ctrl, iter, nodes, times, cost] = controller_1step(x, u_prev, ref, ctrl)
+    % CONTROLLER_1STEP is a 1-step torque- and ablsolute stator flux
+    % tracking ontroller with a prediction horizon of N = 1.
+    % Inputs:
+    %   x: Current state of system.
+    %   u_prev: Previous contorl input u(k-1).
+    %   ref: Torque- and absolute stator flux references.
+    %   ctrl: Struct containing all information about the controller.
+    % Outputs:
+    %   u_opt: Control input u(k) that is optimal acctording to the 1-step
+    %     MPC optimization problem.
+    %   ctrl: Struct containing all information about the controller.
+    %   iter: Does not have a meaning for N = 1. Default is -1.
+    %   nodes: Doesn not have a meaning for N = 1. Default is -1.
+    %   times: Time that the optimization takes.
+    %   cost: Expected cost when applying the input u_opt according to the
+    %     specified cost function.
 
-
+    % Parameters to save measured data (Meaningless for N = 1)
+    iter = -1;
+    nodes = -1;
 
     % Split up input-arrays into relevant variables
     psi_s = x(1:2);
@@ -24,6 +42,7 @@ function [u_opt, ctrl, iter] = controller_1step(x, u_prev, ref, ctrl)
     u_opt = u_prev;
 
     % Run optimization
+    t1 = tic;
     for u = ctrl.U_set
         % Apply dynamics depending on u and calculate associated cost J
         psi_s_kp1 = A_1*psi_s + B_1*psi_r + B_2*u;
@@ -36,8 +55,9 @@ function [u_opt, ctrl, iter] = controller_1step(x, u_prev, ref, ctrl)
             u_opt = u;
         end
     end
+    t1 = toc(t1);
     
-    % Assign -1 iterations as this metric is not useful for the 1-step
-    % decoder
-    iter = -1;
+    % Parameters to save measurement data (Meaningful for N = 1)
+    cost = J_opt;
+    times = t1;
 end

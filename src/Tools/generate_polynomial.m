@@ -1,11 +1,11 @@
-function [a, s] = generatePolynomial(n)
-% Function for creating random polynomials of degree 2 and dimension n
+function [a, s] = generate_polynomial(n)
+% GENERATE_POLYNOMIAL creates a random polynomial of degree 2 and 
+% dimension n.
 % Input
-% n: polynomial dimension
-%
+%   n: Polynomial dimension.
 % Output
-% a: coefficients
-% s: string representation
+%   a: Coefficients of the polynomial.
+%   s: String representation of the polynomial p(x).
 
 % Set hyperparameters
 p_zero = .1; % pr. of setting coefficients to 0 (real pr. is higher)

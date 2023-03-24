@@ -1,6 +1,7 @@
 function [U_opt, J_opt, iter] = branch_and_bound_nstep(J, J_opt, i, N, U, U_opt, x, u_prev, ref, iter, ctrl)
-
-
+    % BRANCH_AND_BOUND_NSTEP is deprecated. Here, the whole reference is
+    % taken into account. Please refer to branch_and_bound_nstep_SDP, where
+    % only the reference at time step k+1 is taken into consideration.
 
     % Split up input-arrays into relevant variables
     psi_s = x(1:2);
