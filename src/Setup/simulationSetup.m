@@ -1,6 +1,11 @@
 function sim = simulationSetup(sys, sim_pre, discretization)
-    % Setup of all simulation parameters. 
-    % Returns a struct sim.
+    % Setup of the simulation.
+    % Input:
+    %   sys: System that is to be simulated.
+    %   sim_pre (optional): Pre-set simulation parameters. Everything that is set in
+    %     this struct will overwrite the default parameters.
+    % Output:
+    %   sim: Struct containing all information about the simulation.
     
     
     % *********************************************************************
@@ -16,8 +21,8 @@ function sim = simulationSetup(sys, sim_pre, discretization)
     sim.steps = {[1 3 .2], [1 7 1]};
     sim.ramps = {[1 100e-6 0 2 1], [1 8 1 10 0]};
     
-    % Initial state and input
-    sim.x_0 = [-.99 -.15 -.91 .07]'; % Initialization to steady-state
+    % Initial state and input (steady-state values)
+    sim.x_0 = [-.99 -.15 -.91 .07]';
     sim.u_0 = zeros(3,1);
     
     

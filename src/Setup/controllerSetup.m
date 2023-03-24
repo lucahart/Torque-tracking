@@ -1,5 +1,17 @@
 function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
-    
+    % Setup of the controller.
+    % Input:
+    %   sys: System that is to be controlled.
+    %   ctrl_type: Type of controller. Possible values are '1-step' for a
+    %     controller with a horizon of N=1, 'n-step' for a controller with
+    %     horizon N>1, and 'n-step-SDP' for a controller with horizon N>1 
+    %     and the possibility to use SDPs.
+    %   ctrl_pre (optional): Pre-set controller parameters. Everything that is set in
+    %     this struct will overwrite the default parameters.
+    % Output:
+    %   ctrl: Struct containing all information about the controller.
+    %   run_ctrl: Function handle that can be executed to run the
+    %     controller.
 
 
     % *********************************************************************
@@ -19,10 +31,10 @@ function [ctrl, run_ctrl] = controllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep.N = 3;
 
     % Multi-step controller with speed-up
-    ctrl_nstep_SDP.lam_u = 6.15e-4; % 5e-4 for N = 1
+    ctrl_nstep_SDP.lam_u = 5e-4;%6.15e-4; % 5e-4 for N = 1
     ctrl_nstep_SDP.lam_T = .052;
     ctrl_nstep_SDP.T_s = 100e-6;
-    ctrl_nstep_SDP.N = 5;
+    ctrl_nstep_SDP.N = 1;
     ctrl_nstep_SDP.node_limit = 100;
     ctrl_nstep_SDP.estimate = 'first column'; % 'all', 'first column', 'diagonal', 'eigen vector', 'eigen vector uniform'
     ctrl_nstep_SDP.type = 'ed guess'; % 'ed guess', 'ed guess + sdp', 'ed & sdp guess'

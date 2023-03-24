@@ -1,6 +1,10 @@
 function sys = systemSetup(sys_pre)
-    % Setup of all physical system parameters. 
-    % Returns a struct sys.
+    % Setup of the physical system.
+    % Input:
+    %   sys_pre (optional): Pre-set system parameters. Everything that is set in
+    %     this struct will overwrite the default parameters.
+    % Output:
+    %   sys: Struct containing all information about the physical system.
     
    
     % *********************************************************************
@@ -24,20 +28,6 @@ function sys = systemSetup(sys_pre)
     X_lr = 0.1104*2;
     v_dc = 1.930;
     std = 5e-4; % noise standard deviation
-%     
-%     V = 6000;
-%     I = 98.9;
-%     P = 850e3;
-%     S = 1.028e6;
-%     f_base = 50;
-%     p = 2;
-%     f_m_si = 1494/60;
-%     R_s = .0057;
-%     R_r = .0045;
-%     X_ls = .0894;
-%     X_lr = .0930;
-%     X_m = 2.492;
-%     v_dc = 2e3;
     
     X_s = X_m + X_ls;
     X_r = X_m + X_lr;
@@ -87,7 +77,7 @@ function sys = systemSetup(sys_pre)
     sys.G_4 = zeros(2,3); % Independent of currents, see (8) in Nemeth et al.
                         % "STATE SPACE MODELING THEORY OF INDUCTION 
                         % MACHINES" or in Section 4.3.3 of Geyer, 
-                        % "MPCofHighPowerConvIndDrives"
+                        % "MPC of High Power Converters and Industrial Drives"
     
     
 end
