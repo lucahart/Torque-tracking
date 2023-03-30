@@ -1,7 +1,3 @@
-%% Setup
-% Display parameters
-display = displaySetup;
-
 % Some parameters for easier plotting and printing
 % --- Time parameters -----------------------------------------------------
 t_ctrl_vec = double(0:n_controller_samples-1)*ctrl0.T_s;
@@ -90,41 +86,47 @@ grid on;
 % Iterations (only useful to compare performance of different guesses)
 ic = reshape([zeros(1,length(iter_count)); iter_count(1,:); zeros(1,length(iter_count))],1,3*length(iter_count));
 tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-ic2 = reshape([zeros(1,length(iter_count)); iter_count(2,:); zeros(1,length(iter_count))],1,3*length(iter_count));
+ic1 = reshape([zeros(1,length(iter_count)); iter_count(2,:); zeros(1,length(iter_count))],1,3*length(iter_count));
+tc1 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(iter_count));
+ic2 = reshape([zeros(1,length(iter_count)); iter_count(3,:); zeros(1,length(iter_count))],1,3*length(iter_count));
 tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(iter_count));
 
 figure(6);
-plot(t_ctrl_vec, ref(1,1:end-1),'k');
+plot(tc2 + ctrl0.T_s/3,ic2/10,'g');
 hold on;
 plot(tc,ic/10,'r');
-plot(tc2 + ctrl0.T_s/6,ic2/10,'b');
+plot(t_ctrl_vec, ref(1,1:end-1),'k');
+plot(tc1 + ctrl0.T_s/6,ic1/10,'b');
 hold off;
 
 title('Iterations')
 xlim([0,t_max]);
 xlabel('time [s]')
 ylabel('Torque [pu] / # Iterations [10]')
-legend('Torque reference', 'Ed guess', 'Opt guess');
+legend('Torque reference', 'Initial solution (1)', 'Initial Solution (2)', 'Initial Solution (3)');
 grid on;
 
 % Nodes
 nc = reshape([zeros(1,length(node_count)); node_count(1,:); zeros(1,length(node_count))],1,3*length(node_count));
 tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-J_acc_2 = reshape([zeros(1,length(node_count)); node_count(2,:); zeros(1,length(node_count))],1,3*length(node_count));
+nc1 = reshape([zeros(1,length(node_count)); node_count(2,:); zeros(1,length(node_count))],1,3*length(node_count));
+tc1 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+nc2 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node_count))],1,3*length(node_count));
 tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 
 figure(7);
-plot(t_ctrl_vec, ref(1,1:end-1),'k');
+plot(tc2+ctrl0.T_s/3,nc2/1e4,'g');
 hold on;
 plot(tc,nc/1e4,'r');
-plot(tc2+ctrl0.T_s/6,J_acc_2/1e4,'b');
+plot(tc1+ctrl0.T_s/6,nc1/1e4,'b');
+plot(t_ctrl_vec, ref(1,1:end-1),'k');
 hold off;
 
 title('Nodes')
 xlim([0,t_max]);
 xlabel('time [s]')
 ylabel('Torque [pu] / # Nodes [1e4]')
-legend('Torque reference', 'Ed guess', 'Opt guess');
+legend('Torque reference', 'Initial solution (1)', 'Initial Solution (2)', 'Initial Solution (3)');
 grid on;
 
 % Time
@@ -174,10 +176,10 @@ fprintf('Absolute flux rms error: (Opt)                %.4fe-3 \n', ...
 fprintf('Absolute flux rms error: (Ed guess)           %.4fe-3 \n', ...
     norm(Psi_sim(2,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 
-% Print accumulated cost
-fprintf('Accumulated tracking cost: (Opt)              %.4fe-3 \n', ...
-    J_acc_0(end)/length(J_acc_0)*1e3);
-fprintf('Accumulated tracking cost: (Ed guess)         %.4fe-3 \n', ...
-    J_acc_1(end)/length(J_acc_1)*1e3);
+% % Print accumulated cost
+% fprintf('Accumulated tracking cost: (Opt)              %.4fe-3 \n', ...
+%     J_acc_0(end)/length(J_acc_0)*1e3);
+% fprintf('Accumulated tracking cost: (Ed guess)         %.4fe-3 \n', ...
+%     J_acc_1(end)/length(J_acc_1)*1e3);
 
 

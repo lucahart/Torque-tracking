@@ -60,11 +60,14 @@ T_sim = 1/sys.pf*sys.X_m/sys.D*(squeeze(psi_r_sim(1,:,:)).*squeeze(psi_s_sim(2,:
 figure(3);
 plot(t_sim_vec, ref_sim(1,:), 'k')
 hold on;
-plot(t_sim_vec, T_sim);
+plot(t_sim_vec, T_sim(1,:), 'r');
+plot(t_sim_vec, T_sim(2,:), 'g');
+plot(t_sim_vec, T_sim(3,:), 'b');
 hold off;
 
 title('Torque');
-legend('Torque reference','No node limit', 'Only ed guess', 'Ed guess + sdp');
+% legend('Torque reference','No node limit', 'Ed guess', 'Ed guess + sdp');
+legend('Torque reference','Method (1)', 'Method (2)', 'Method (3)','Location','northwest');
 ylim([0,1.2]);
 xlim([0,t_max]);
 xlabel('time [s]');
@@ -122,17 +125,17 @@ grid on;
 % Nodes
 nc = reshape([zeros(1,length(node_count)); node_count(1,:); zeros(1,length(node_count))],1,3*length(node_count));
 tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-J_acc_2 = reshape([zeros(1,length(node_count)); node_count(2,:); zeros(1,length(node_count))],1,3*length(node_count));
+nc1 = reshape([zeros(1,length(node_count)); node_count(2,:); zeros(1,length(node_count))],1,3*length(node_count));
+tc1 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+nc2 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node_count))],1,3*length(node_count));
 tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-nc3 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node_count))],1,3*length(node_count));
-tc3 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 
 figure(7);
 plot(t_ctrl_vec, ref(1,1:end-1),'k');
 hold on;
 plot(tc,nc/100,'r');
-plot(tc2+ctrl0.T_s/6,J_acc_2/100,'b');
-plot(tc3+ctrl0.T_s*2/6, nc3/100,'g');
+plot(tc1+ctrl0.T_s/6,nc1/100,'b');
+plot(tc2+ctrl0.T_s*2/6, nc2/100,'g');
 hold off;
 
 title('Nodes')
@@ -167,8 +170,8 @@ grid on;
 
 % Accumulated Cost
 J_acc_0 = cost_vec(1,:);
-J_acc_1 = cost_vec(3,:);
-J_acc_2 = min(cost_vec([5,7],:));
+J_acc_1 = cost_vec(ctrl0.n_costs + 1,:);
+J_acc_2 = min(cost_vec(ctrl0.n_costs+ctrl1.n_costs+[1,3:ctrl2.n_costs],:));
 for k = 2:length(J_acc_0)
     J_acc_0(k) = J_acc_0(k) + J_acc_0(k-1);
     J_acc_1(k) = J_acc_1(k) + J_acc_1(k-1);
@@ -179,15 +182,16 @@ figure(8);
 plot(t_ctrl_vec, ref_ctrl,'k');
 hold on;
 plot(t_ctrl_vec,J_acc_0,'r');
-plot(t_ctrl_vec,J_acc_1,'b');
-plot(t_ctrl_vec,J_acc_2,'g');
+plot(t_ctrl_vec,J_acc_1,'g');
+plot(t_ctrl_vec,J_acc_2,'b');
 hold off;
 
 title('Accumulated Cost')
 xlim([0,t_max]);
 xlabel('time [s]')
 ylabel('Torque [pu] / Accumulated Cost')
-legend('Torque reference','Opt', 'Ed guess', 'Ed guess + sdp');
+legend('Torque reference','Method (1)', 'Method (2)', 'Method (3)','Location','northwest');
+% legend('Torque reference','Opt', 'Ed guess', 'Ed guess + sdp','Location','northwest');
 grid on;
 end
 
@@ -205,39 +209,33 @@ del_u1 = abs([sim.u_0 squeeze(u_vec(:,2,1:end-1))] - squeeze(u_vec(:,2,:)));
 f_sw1 = 1/(12*t_max)*sum(del_u1, 'all');
 del_u2 = abs([sim.u_0 squeeze(u_vec(:,3,1:end-1))] - squeeze(u_vec(:,3,:)));
 f_sw2 = 1/(12*t_max)*sum(del_u2, 'all');
-fprintf('Average switching frequency (Opt):            %.2fHz \n', f_sw0);
-fprintf('Average switching frequency (Ed guess):       %.2fHz \n', f_sw1);
-fprintf('Average switching frequency (Ed guess + sdp): %.2fHz \n\n', f_sw2);
+fprintf('Average switching frequency (ctrl0): %.2fHz \n', f_sw0);
+fprintf('Average switching frequency (ctrl1): %.2fHz \n', f_sw1);
+fprintf('Average switching frequency (ctrl2): %.2fHz \n\n', f_sw2);
 
 % Print torque rms error
-fprintf('Torque rms error: (Opt)                       %.4fe-3 \n', ...
+fprintf('Torque rms error: (ctrl0)            %.4fe-3 \n', ...
     norm(T_sim(1,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
-fprintf('Torque rms error: (Ed guess)                  %.4fe-3 \n', ...
+fprintf('Torque rms error: (ctrl1)            %.4fe-3 \n', ...
     norm(T_sim(2,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
-fprintf('Torque rms error: (Ed guess + sdp)            %.4fe-3 \n\n', ...
+fprintf('Torque rms error: (ctrl2)            %.4fe-3 \n\n', ...
     norm(T_sim(3,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
 
 % Print absolute flux rms error
-fprintf('Absolute flux rms error: (Opt)                %.4fe-3 \n', ...
+fprintf('Absolute flux rms error: (ctrl0)     %.4fe-3 \n', ...
     norm(Psi_sim(1,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
-fprintf('Absolute flux rms error: (Ed guess)           %.4fe-3 \n', ...
+fprintf('Absolute flux rms error: (ctrl1)     %.4fe-3 \n', ...
     norm(Psi_sim(2,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
-fprintf('Absolute flux rms error: (Ed guess + sdp)     %.4fe-3 \n\n', ...
+fprintf('Absolute flux rms error: (ctrl2)     %.4fe-3 \n\n', ...
     norm(Psi_sim(3,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 
 % Print accumulated cost
-fprintf('Accumulated tracking cost: (Opt)              %.4fe-3 \n', ...
+fprintf('Average tracking cost: (ctrl0)       %.4fe-3 \n', ...
     J_acc_0(end)/length(J_acc_0)*1e3);
-fprintf('Accumulated tracking cost: (Ed guess)         %.4fe-3 \n', ...
+fprintf('Average tracking cost: (ctrl1)       %.4fe-3 \n', ...
     J_acc_1(end)/length(J_acc_1)*1e3);
-fprintf('Accumulated tracking cost: (Ed guess + sdp)   %.4fe-3 \n', ...
+fprintf('Average tracking cost: (ctrl2)       %.4fe-3 \n', ...
     J_acc_2(end)/length(J_acc_2)*1e3);
-
-% % Print average sphere decoding nodes used
-% fprintf('Mean sphere decoding nodes:  %0.4f \n',mean(iter_count(:,execute_sdp),2))
-
-% % 
-% results(x_vec_sim, u_vec, iter_count, sim.T_sim, controller_samples_per_round*simulation_samples_per_controller_sample,controller_samples_per_round, 0, 1, sys.K_inv, sys);
 
 
 

@@ -77,7 +77,7 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     % *********************************************************************
 
     % 1-step controller
-    ctrl_1step.lam_u = 1.2e-4;
+    ctrl_1step.lam_u = 5e-4;
     ctrl_1step.lam_T = .052;
     ctrl_1step.T_s = 25e-6;
     ctrl_1step.N = 1;
@@ -89,12 +89,12 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep.N = 5;
 
     % Multi-step controller with speed-up
-    ctrl_nstep_SDP.lam_u = 6.15e-4; % 5e-4 for N = 1 -> comparable f_sw
+    ctrl_nstep_SDP.lam_u = 6.15e-4;
     ctrl_nstep_SDP.lam_T = .052;
     ctrl_nstep_SDP.T_s = 100e-6;
     ctrl_nstep_SDP.N = 5;
-    ctrl_nstep_SDP.node_limit = 100;
-    ctrl_nstep_SDP.estimate = 'first column';
+    ctrl_nstep_SDP.node_limit = 250;
+    ctrl_nstep_SDP.estimate = 'all';
     ctrl_nstep_SDP.type = 'ed guess';
     ctrl_nstep_SDP.eps = 1e-12;
     ctrl_nstep_SDP.volatile = 0;
@@ -132,14 +132,12 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
         ctrl.B_3 = sys.G_3*ctrl.T_s*sys.w_base;
         ctrl.B_4 = sys.G_4*ctrl.T_s*sys.w_base;
 
-        % Generate the set U = {-1,0,1}^3
-        u = [-1, 0, 1];
-        [U1, U2, U3] = ndgrid(u, u, u);
-        ctrl.U_set = [U1(:), U2(:), U3(:)]';
-
         % Set the run function that executes the control algorithm in
         % simulation
         run_ctrl = @controller_1step;
+        
+        % Specify length of cost term
+        ctrl.n_costs = 1;
     end
 
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -162,23 +160,30 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
         ctrl.B_3 = sys.G_3*ctrl.T_s*sys.w_base;
         ctrl.B_4 = sys.G_4*ctrl.T_s*sys.w_base;
 
-        % Generate the set U = {-1,0,1}^3
-        u = [-1, 0, 1];
-        [U1, U2, U3] = ndgrid(u, u, u);
-        ctrl.U_set = [U1(:), U2(:), U3(:)]';
-
         % Set the run function that executes the control algorithm in
         % simulation
         run_ctrl = @controller_nstep;
+        
+        % Specify length of cost term
+        ctrl.n_costs = 2;
     end
 
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    % Multi-step controller with speed-up
+    % Multi-step controller with SDP
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^    
     if ctrl_type == "n-step-SDP"
         % Set all previously specified parameters
         ctrl = ctrl_nstep_SDP;
-
+        
+        % Overwrites the default controller parameters of the section above
+        % if there are pre-set controller parameters in ctrl_pre
+        if nargin >= 3
+            fn = fieldnames(ctrl_pre);
+            for i = 1:numel(fn)
+                ctrl.(fn{i}) = ctrl_pre.(fn{i});
+            end
+        end
+        
         % Calculate discrete-time matrices
         ctrl.A_1 = eye(2) + sys.F_1*ctrl.T_s*sys.w_base;
         ctrl.A_2 = eye(2) + sys.F_2*ctrl.T_s*sys.w_base;
@@ -187,35 +192,36 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
         ctrl.B_3 = sys.G_3*ctrl.T_s*sys.w_base;
         ctrl.B_4 = sys.G_4*ctrl.T_s*sys.w_base;
 
-        % Generate the set U = {-1,0,1}^3
-        u = [-1, 0, 1];
-        [U1, U2, U3] = ndgrid(u, u, u);
-        ctrl.U_set = [U1(:), U2(:), U3(:)]';
-
         % Set the run function that executes the control algorithm in
         % simulation
         run_ctrl = @controller_nstep_SDP;
         
         % SDP setup
         ctrl.sdp = sdpSetup(ctrl);
-    end  
-
-    % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    % Pre-specified controller parameters
-    % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    % Overwrites the default controller parameters of the section above if
-    % there are pre-specified controller parameters
-    if nargin >= 3
-        fn = fieldnames(ctrl_pre);
-        for i = 1:numel(fn)
-            ctrl.(fn{i}) = ctrl_pre.(fn{i});
+        
+        % Specify BASE LENGTH of cost term
+        ctrl.n_costs = 2;
+        
+        % Specify additional costs if ctrl.type != 'ed guess'
+        if ctrl.type ~= "ed guess" 
+            if ctrl.estimate == "all"
+                ctrl.n_costs = ctrl.n_costs + 4;
+            else
+                ctrl.n_costs = ctrl.n_costs + 1;
+            end
         end
+        
     end
 
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    % Useful for all controllers
+    % Required for all controllers
     % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     ctrl.T_factor = sys.X_m/(sys.D*sys.pf);
     ctrl.U_ed = zeros(3*ctrl.N,1);
+
+    % Generate the set U = {-1,0,1}^3
+    u = [-1, 0, 1];
+    [U1, U2, U3] = ndgrid(u, u, u);
+    ctrl.U_set = [U1(:), U2(:), U3(:)]';
     
 end

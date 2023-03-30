@@ -34,7 +34,7 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
     
     %% Run controller
     if ctrl.type == "ed guess + sdp"
-        costs = zeros(3,1); % J_bnb, J_ed, J_sdp
+        costs = zeros(ctrl.n_costs,1); % J_bnb, J_ed, J_sdp
         
         % Set initial values from educated guess
         U_ed = ctrl.U_ed;
@@ -70,11 +70,11 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
                 U_opt = U_bnb;
                 J_opt = J_bnb;
             end
-            costs(3) = J_sdp';
+            costs(3:end) = J_sdp';
         else
             U_opt = U_bnb;
             J_opt = J_bnb;
-            costs(3) = NaN(1,1);
+            costs(3:end) = NaN(ctrl.n_costs-2,1);
         end
         iter(1) = iter_bnb;
         nodes(1) = nodes_bnb;
@@ -82,7 +82,7 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
         costs(2) = J_ed;
         
     elseif ctrl.type == "ed & sdp guess"
-        costs = zeros(6,1); % J_opt, J_ed, J_'first col', J_'diag', J_'eig vec', J_'eig vec uniform'
+        costs = zeros(ctrl.n_costs,1); % J_opt, J_ed, J_'first col', J_'diag', J_'eig vec', J_'eig vec uniform'
         
         % Run sdp to obtain guesses for U and get educated guess
         u_hat = [ctrl.U_ed run_sdp(ctrl,x,u_prev,ref(:,1))];
@@ -101,14 +101,14 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
         % Run optimization
         t = tic;
         [U_opt, J_opt, iter_sdp, nodes_sdp] = branch_and_bound_nstep_SDP(J, J_sdp, 0, ctrl.N, U, U_sdp, x, u_prev, ref(:,1), iter_sdp, nodes_sdp, ctrl);
-        times(2) = toc(t);
-        iter(2) = iter_sdp;
-        nodes(2) = nodes_sdp;
+        times(1) = toc(t);
+        iter(1) = iter_sdp;
+        nodes(1) = nodes_sdp;
         costs(1) = J_opt;
-        costs(2:6) = J_hat;
+        costs(2:end) = J_hat;
         
     elseif ctrl.type == "ed guess"
-        costs = zeros(2,1); % J_opt, J_ed
+        costs = zeros(ctrl.n_costs,1); % J_opt, J_ed
         
         % Set initial values from educated guess
         U_ed = ctrl.U_ed;

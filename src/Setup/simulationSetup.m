@@ -7,6 +7,9 @@ function sim = SimulationSetup(sys, sim_pre, discretization)
     %   sim_pre (optional): Pre-set simulation parameters. Everything that
     %     is set in this struct will overwrite the default parameters. All
     %     possible parameters and their default values are listed below.
+    %   discretization (optional: Choose between forward euler and exact
+    %     discretization.
+    %     Default: discretization = 'exact'
     % Output:
     %   sim: Struct containing all information about the simulation.
     %
@@ -46,7 +49,7 @@ function sim = SimulationSetup(sys, sim_pre, discretization)
     sim.T_sim = .5e-6;
     sim.apply_only_opt = 0;
     sim.steps = {[1 3 .2], [1 7 1]};
-    sim.ramps = {[1 100e-6 0 2 1], [1 8 1 10 0]};
+    sim.ramps = {[1 0 0 2 1]};
     
     % Initial state and input (steady-state values)
     sim.x_0 = [-.99 -.15 -.91 .07]';

@@ -7,20 +7,18 @@ sim = struct();
 ctrl0 = struct();
 ctrl1 = struct();
 ctrl2 = struct();
-% steps = {};
-% ramps = {};
-
-% Number of controllers that are simulated
-n_c = 3;
 
 % -------------------------------------------------------------------------
 % Quick setup of simulation parameters (set and remove whatever you want)
 % -------------------------------------------------------------------------
 sim.n_fundamentals = 10;
 sys.std = 0e-4;
-ctrl0.node_limit = inf;
-ctrl1.volatile = 1;
+% ctrl0.node_limit = inf;
+% ctrl1.volatile = 1;
+% ctrl1.type = 'ed & sdp guess';
+ctrl2.volatile = 1;
 ctrl2.type = 'ed guess + sdp';
+ctrl1.node_limit = inf;
 % -------------------------------------------------------------------------
 
 % Physical system
@@ -30,9 +28,11 @@ sys = SystemSetup(sys);
 sim = SimulationSetup(sys, sim, 'exact');
 
 % Controllers
-[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, J_opt as reference
+[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, gives J_opt as reference
 [ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1); % controller with only ed guess
 [ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed guess and sdp
+n_costs  = ctrl0.n_costs + ctrl1.n_costs + ctrl2.n_costs; % required length of cost term
+n_c = 3; % number of controllers that are simulated
 
 
 %% Precalculations for faster simulation
@@ -59,7 +59,7 @@ u_vec = NaN(3, n_c, n_controller_samples);
 iter_count = NaN(n_c, n_controller_samples);
 node_count = NaN(n_c, n_controller_samples);
 time_count = NaN(n_c, n_controller_samples);
-cost_vec = NaN(7, n_controller_samples); %size dependent on # and ctrl type
+cost_vec = NaN(n_costs, n_controller_samples);
 
 % Sampled with simulation sampling time
 x_vec_sim = nan*ones(4, n_c, n_simulation_samples);
