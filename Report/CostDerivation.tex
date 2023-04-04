@@ -145,9 +145,9 @@ The 1-step cost function from \cite{gey_book} is specified as:
 \end{equation*}
 where $T^*(k)$ and $\Psi_s^*(k)$ refer to the Torque- and absolute stator flux references, respectively.
 Using an extended horizon of $N \in \mathbb{N}$ leads to the cost function
-\begin{equation*}
+\begin{equation}
 	J_N(k) = \sum_{l = k}^{k+N-1} \lambda_T ||T^*(l+1)-T(l+1)||_2 + (1-\lambda_T) ||(\Psi_s^*(l+1))^2-(\Psi_s(l+1))^2||_2 + \lambda_u ||\Delta \b{u}(l)||_1.
-\end{equation*}
+\end{equation}
 
 
 \subsection{Matrices for Full Horizon Dynamics}

@@ -76,7 +76,7 @@ t_sim = tic;
 for k = 1:n_controller_samples
     
     % Apply noise
-    y = x + normrnd(0, sys.std, 4, 1);
+    y = x + rand*(sim.b-sim.a)+sim.a;
     
     % Apply controller
     [u0, ctrl0, iter0, nodes0, times0, cost0] = run_ctrl0(y(:,1), u_prev(:,1), ref(:,k+1:end), ctrl0);

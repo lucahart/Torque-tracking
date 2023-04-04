@@ -115,39 +115,39 @@ nc2 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node
 tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 
 figure(7);
-plot(tc2+ctrl0.T_s/3,nc2/1e4,'g');
-hold on;
-plot(tc,nc/1e4,'r');
-plot(tc1+ctrl0.T_s/6,nc1/1e4,'b');
-plot(t_ctrl_vec, ref(1,1:end-1),'k');
-hold off;
-
-title('Nodes')
-xlim([0,t_max]);
-xlabel('time [s]')
-ylabel('Torque [pu] / # Nodes [1e4]')
-legend('Torque reference', 'Initial solution (1)', 'Initial Solution (2)', 'Initial Solution (3)');
-grid on;
-
-% Time
-nc = reshape([zeros(1,length(time_count)); time_count(1,:); zeros(1,length(time_count))],1,3*length(time_count));
-tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-J_acc_2 = reshape([zeros(1,length(time_count)); time_count(2,:); zeros(1,length(time_count))],1,3*length(time_count));
-tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-
-figure(8);
 plot(t_ctrl_vec, ref(1,1:end-1),'k');
 hold on;
-plot(tc,nc,'r');
-plot(tc2+ctrl0.T_s/6,J_acc_2,'b');
+plot(tc,nc2/1e3,'g');
+plot(tc1+ctrl0.T_s/6,nc/1e3,'b');
+plot(tc2+ctrl0.T_s/3,nc1/1e3,'r');
 hold off;
 
-title('Time')
+title('# Parent nodes traversed')
 xlim([0,t_max]);
 xlabel('time [s]')
-ylabel('Torque [pu] / # Time [s]')
-legend('Torque reference', 'Ed guess', 'Opt guess');
+ylabel('Torque [pu] / # Nodes [10^3]')
+legend('Torque reference', 'Bad guess', 'Ed guess', 'Opt guess');
 grid on;
+
+% % Time
+% nc = reshape([zeros(1,length(time_count)); time_count(1,:); zeros(1,length(time_count))],1,3*length(time_count));
+% tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+% J_acc_2 = reshape([zeros(1,length(time_count)); time_count(2,:); zeros(1,length(time_count))],1,3*length(time_count));
+% tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+% 
+% figure(8);
+% plot(t_ctrl_vec, ref(1,1:end-1),'k');
+% hold on;
+% plot(tc,nc,'r');
+% plot(tc2+ctrl0.T_s/6,J_acc_2,'b');
+% hold off;
+% 
+% title('Time')
+% xlim([0,t_max]);
+% xlabel('time [s]')
+% ylabel('Torque [pu] / # Time [s]')
+% legend('Torque reference', 'Ed guess', 'Opt guess');
+% grid on;
 end
 
 %% Printing

@@ -60,14 +60,14 @@ T_sim = 1/sys.pf*sys.X_m/sys.D*(squeeze(psi_r_sim(1,:,:)).*squeeze(psi_s_sim(2,:
 figure(3);
 plot(t_sim_vec, ref_sim(1,:), 'k')
 hold on;
-plot(t_sim_vec, T_sim(1,:), 'r');
-plot(t_sim_vec, T_sim(2,:), 'g');
-plot(t_sim_vec, T_sim(3,:), 'b');
+plot(t_sim_vec, T_sim(1,:), 'b');
+plot(t_sim_vec, T_sim(2,:), 'r');
+% plot(t_sim_vec, T_sim(3,:), 'g');
+% plot(t_sim_vec, T_sim(3,:), 'm');
 hold off;
 
 title('Torque');
-% legend('Torque reference','No node limit', 'Ed guess', 'Ed guess + sdp');
-legend('Torque reference','Method (1)', 'Method (2)', 'Method (3)','Location','northwest');
+legend('Reference','No node limit', 'Node limit', ctrl2.type, ctrl3.type, 'Location','northwest');
 ylim([0,1.2]);
 xlim([0,t_max]);
 xlabel('time [s]');
@@ -123,74 +123,78 @@ legend('Torque reference','# Iterations opt','# Iterations ed','# Iterations sdp
 grid on;
 
 % Nodes
-nc = reshape([zeros(1,length(node_count)); node_count(1,:); zeros(1,length(node_count))],1,3*length(node_count));
-tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+nc0 = reshape([zeros(1,length(node_count)); node_count(1,:); zeros(1,length(node_count))],1,3*length(node_count));
 nc1 = reshape([zeros(1,length(node_count)); node_count(2,:); zeros(1,length(node_count))],1,3*length(node_count));
-tc1 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 nc2 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node_count))],1,3*length(node_count));
-tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+nc3 = reshape([zeros(1,length(node_count)); node_count(4,:); zeros(1,length(node_count))],1,3*length(node_count));
+tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 
 figure(7);
 plot(t_ctrl_vec, ref(1,1:end-1),'k');
 hold on;
-plot(tc,nc/100,'r');
-plot(tc1+ctrl0.T_s/6,nc1/100,'b');
-plot(tc2+ctrl0.T_s*2/6, nc2/100,'g');
+plot(tc,nc0/1000,'b');
+plot(tc+ctrl0.T_s/6,nc1/1000,'r');
+plot(tc+ctrl0.T_s*2/6, nc2/1000,'g');
+plot(tc+ctrl0.T_s*3/6, nc3/1000,'m');
 hold off;
 
 title('Nodes')
 xlim([0,t_max]);
 xlabel('time [s]')
-ylabel('Torque [pu] / # Nodes [100]')
-legend('Torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
+ylabel('torque [pu] / # nodes [10^3]')
+legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','northwest');
 grid on;
 
-% Time
-nc = reshape([zeros(1,length(time_count)); time_count(1,:); zeros(1,length(time_count))],1,3*length(time_count));
-tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-J_acc_2 = reshape([zeros(1,length(time_count)); time_count(2,:); zeros(1,length(time_count))],1,3*length(time_count));
-tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-nc3 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node_count))],1,3*length(node_count));
-tc3 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-
-figure(8);
-plot(t_ctrl_vec, ref(1,1:end-1),'k');
-hold on;
-plot(tc,nc,'r');
-plot(tc2+ctrl0.T_s/6,J_acc_2,'b');
-plot(tc3+ctrl0.T_s*2/6, nc3/100,'g');
-hold off;
-
-title('Time')
-xlim([0,t_max]);
-xlabel('time [s]')
-ylabel('Torque [pu] / # Time [s]')
-legend('Torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
-grid on;
+% % Time
+% nc = reshape([zeros(1,length(time_count)); time_count(1,:); zeros(1,length(time_count))],1,3*length(time_count));
+% tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+% nc2 = reshape([zeros(1,length(time_count)); time_count(2,:); zeros(1,length(time_count))],1,3*length(time_count));
+% tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+% nc3 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node_count))],1,3*length(node_count));
+% tc3 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+% 
+% figure(8);
+% plot(t_ctrl_vec, ref(1,1:end-1),'k');
+% hold on;
+% plot(tc,nc,'r');
+% plot(tc2+ctrl0.T_s/6,nc2,'b');
+% plot(tc3+ctrl0.T_s*2/6, nc3/100,'g');
+% hold off;
+% 
+% title('Time')
+% xlim([0,t_max]);
+% xlabel('time [s]')
+% ylabel('Torque [pu] / # Time [s]')
+% legend('Torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
+% grid on;
 
 % Accumulated Cost
 J_acc_0 = cost_vec(1,:);
 J_acc_1 = cost_vec(ctrl0.n_costs + 1,:);
-J_acc_2 = min(cost_vec(ctrl0.n_costs+ctrl1.n_costs+[1,3:ctrl2.n_costs],:));
+J_acc_2 = cost_vec(ctrl0.n_costs+ctrl1.n_costs+1,:);
+J_acc_3 = min(cost_vec(ctrl0.n_costs+ctrl1.n_costs+ctrl2.n_costs+...
+    [1,3:ctrl2.n_costs],:));
 for k = 2:length(J_acc_0)
     J_acc_0(k) = J_acc_0(k) + J_acc_0(k-1);
     J_acc_1(k) = J_acc_1(k) + J_acc_1(k-1);
     J_acc_2(k) = J_acc_2(k) + J_acc_2(k-1);
+    J_acc_3(k) = J_acc_3(k) + J_acc_3(k-1);
 end
 
 figure(8);
 plot(t_ctrl_vec, ref_ctrl,'k');
 hold on;
-plot(t_ctrl_vec,J_acc_0,'r');
-plot(t_ctrl_vec,J_acc_1,'g');
-plot(t_ctrl_vec,J_acc_2,'b');
+plot(t_ctrl_vec,J_acc_0,'b');
+plot(t_ctrl_vec,J_acc_1,'r');
+plot(t_ctrl_vec,J_acc_2,'g');
+plot(t_ctrl_vec,J_acc_3,'m');
 hold off;
 
 title('Accumulated Cost')
 xlim([0,t_max]);
 xlabel('time [s]')
 ylabel('Torque [pu] / Accumulated Cost')
-legend('Torque reference','Method (1)', 'Method (2)', 'Method (3)','Location','northwest');
+legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','northwest');
 % legend('Torque reference','Opt', 'Ed guess', 'Ed guess + sdp','Location','northwest');
 grid on;
 end

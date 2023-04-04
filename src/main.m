@@ -7,18 +7,15 @@ sim = struct();
 ctrl0 = struct();
 ctrl1 = struct();
 ctrl2 = struct();
+ctrl3 = struct();
 
 % -------------------------------------------------------------------------
 % Quick setup of simulation parameters (set and remove whatever you want)
 % -------------------------------------------------------------------------
-sim.n_fundamentals = 10;
-sys.std = 0e-4;
-% ctrl0.node_limit = inf;
-% ctrl1.volatile = 1;
-% ctrl1.type = 'ed & sdp guess';
-ctrl2.volatile = 1;
-ctrl2.type = 'ed guess + sdp';
-ctrl1.node_limit = inf;
+ctrl0.node_limit = inf;
+ctrl2.type = 'ed & sdp guess';
+ctrl3.verbose = 1;
+ctrl3.type = 'ed guess + sdp';
 % -------------------------------------------------------------------------
 
 % Physical system
@@ -30,9 +27,10 @@ sim = SimulationSetup(sys, sim, 'exact');
 % Controllers
 [ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, gives J_opt as reference
 [ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1); % controller with only ed guess
-[ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed guess and sdp
-n_costs  = ctrl0.n_costs + ctrl1.n_costs + ctrl2.n_costs; % required length of cost term
-n_c = 3; % number of controllers that are simulated
+[ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed and sdp guess
+[ctrl3, run_ctrl3] = ControllerSetup(sys, 'n-step-SDP', ctrl3); % controller with ed guess and sdp
+n_costs  = ctrl0.n_costs + ctrl1.n_costs + ctrl2.n_costs + ctrl3.n_costs; % required length of cost term
+n_c = 4; % number of controllers that are simulated
 
 
 %% Precalculations for faster simulation
@@ -78,13 +76,14 @@ t_sim = tic;
 for k = 1:n_controller_samples
     
     % Apply noise
-    y = x + normrnd(0, sys.std, 4, 1);
+    y = x + rand*(sim.b-sim.a)+sim.a;
     
     % Apply controller
     [u0, ctrl0, iter0, nodes0, times0, cost0] = run_ctrl0(y(:,1), u_prev(:,1), ref(:,k+1:end), ctrl0);
     [u1, ctrl1, iter1, nodes1, times1, cost1] = run_ctrl1(y(:,2), u_prev(:,2), ref(:,k+1:end), ctrl1);
     [u2, ctrl2, iter2, nodes2, times2, cost2] = run_ctrl2(y(:,3), u_prev(:,3), ref(:,k+1:end), ctrl2);
-    u = [u0 u1 u2];
+    [u3, ctrl3, iter3, nodes3, times3, cost3] = run_ctrl2(y(:,3), u_prev(:,3), ref(:,k+1:end), ctrl3);
+    u = [u0 u1 u2 u3];
     
     % Apply physical system steps
     for j = 1:simulation_samples_per_controller_sample
@@ -94,10 +93,10 @@ for k = 1:n_controller_samples
     
     % Update parameters for plotting
     u_vec(:,:,k) = u;
-    iter_count(:,k) = [iter0; iter1; iter2];
-    node_count(:,k) = [nodes0; nodes1; nodes2];
-    time_count(:,k) = [times0; times1; times2];
-    cost_vec(:,k) = [cost0; cost1; cost2]; % J_opt0, J_ed0, J_bnb1, J_ed1, J_bnb2, J_ed2, J_sdp2
+    iter_count(:,k) = [iter0; iter1; iter2; iter3];
+    node_count(:,k) = [nodes0; nodes1; nodes2; nodes3];
+    time_count(:,k) = [times0; times1; times2; times3];
+    cost_vec(:,k) = [cost0; cost1; cost2; cost3]; % J_opt0, J_ed0, J_bnb1, J_ed1, J_bnb2, J_ed2, J_sdp2
     
     % Update u_prev
     u_prev = u;
