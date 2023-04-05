@@ -1,0 +1,108 @@
+\documentclass[a4paper,11pt,twoside]{book}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=black]{hyperref}
+\usepackage{enumitem}
+\usepackage{wrapfig}
+\usepackage{gensymb}
+\usepackage{bbm}
+\usepackage{mathtools}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tikz,pgfplots}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\usepackage{booktabs}
+\usepackage{xcolor,calc}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes.geometric}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+% \usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+
+\newcommand{\dc}{\mathrm{dc}}
+\newcommand{\abc}{\mathrm{abc}}
+\newcommand{\A}{\mathrm{a}}
+\newcommand{\B}{\mathrm{b}}
+\newcommand{\C}{\mathrm{c}}
+\newcommand{\g}{\mathrm{g}}
+\newcommand{\ph}{\mathrm{ph}}
+\newcommand{\sw}{\mathrm{sw}}
+\newcommand{\s}{\mathrm{s}}
+\newcommand{\TDD}{\mathrm{TDD}}
+\newcommand{\err}{\mathrm{err}}
+\newcommand{\p}{\mathrm{p}}
+\newcommand{\U}{\mathrm{u}}
+\newcommand{\temp}{\mathrm{temp}}
+\newcommand{\PI}{\mathrm{PI}}
+\newcommand{\unc}{\mathrm{unc}}
+\newcommand{\ctrl}{\mathrm{ctrl}}
+\newcommand{\kI}{k_\mathrm{I}}
+\newcommand{\kP}{k_\mathrm{P}}
+\newcommand{\mavg}{\mathrm{mavg}}
+\newcommand{\Sim}{\mathrm{sim}}
+\renewcommand{\b}[1]{\boldsymbol{#1}}
+\newlength{\fheight}
+\newlength{\fwidth}
+\newcommand{\I}{\b{I}}
+\newcommand{\0}{\b{0}}
+\newcommand{\bab}{\mathrm{bab}}
+\newcommand{\ed}{\mathrm{ed}}
+\newcommand{\ini}{\mathrm{ini}}
+\newcommand{\augp}{\mathrm{aug}}
+\newcommand{\augs}{\mathrm{aug}}
+\newcommand{\opt}{\mathrm{opt}}
+\newcommand{\Tfac}{T_\mathrm{factor}}
+\renewcommand{\sp}{\text{ }}
+\DeclareSIUnit{\pu}{pu}
+\DeclareSIUnit{\rpm}{rpm}
+\newcommand{\Opt}{Opt }
+\newcommand{\Ed}{Ed guess }
+\newcommand{\Edsdp}{Ed \& sdp guess }
+\newcommand{\Edplus}{Ed guess + sdp }
+
+\DeclareMathOperator*{\argmin}{\mathrm{argmin}}
+\definecolor{blueCol}{rgb}{0, 0.447 0.741}
+
+%% Configuration %%%%%%%%%%%%%%%%
+\author{
+	\textbf{Author:}\\
+	Luca Hartmann\\
+	\\
+	\textbf{Supervisors:}\\
+	Orcun Karaca\\
+	Tinus Dorfling
+}
+
+\title{SDP for Torque Tracking in Real-Time}
+
+
+\begin{document}
+	
+\maketitle
+
+\include{Chapter__Introduction}
+
+\include{Chapter__Preliminaries}
+
+\include{Chapter__FCS-MPC_for_Torque_Tracking_in_Real-Time}
+
+\include{Chapter__Numerical_Case_Studies}
+
+
+\bibliographystyle{ieeetr}
+\bibliography{bibliography}
+
+\end{document}

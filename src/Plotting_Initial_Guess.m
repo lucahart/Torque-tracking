@@ -1,3 +1,7 @@
+% *************************************************************************
+%% Setup
+% *************************************************************************
+
 % Some parameters for easier plotting and printing
 % --- Time parameters -----------------------------------------------------
 t_ctrl_vec = double(0:n_controller_samples-1)*ctrl0.T_s;
@@ -14,12 +18,18 @@ psi_s_ctrl = x_vec_ctrl(1:2,:,:);
 psi_r_ctrl = x_vec_ctrl(3:4,:,:);
 ref_ctrl = ref(1,1:end-1);
 
-if 1
-%% Plotting
-% Plot states
-figure(1);
 
+% *************************************************************************
+%% Plotting
+% *************************************************************************
+
+
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+% Plot states
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ctrler = 1; % change 1 to 2 or 3 to get respective controlled dynamics
+
+figure(1);
 plot(t_sim_vec,squeeze(x_vec_sim(:,ctrler,:)));
 
 title('Optimal Fluxes');
@@ -27,10 +37,13 @@ legend('\psi_{s,\alpha}','\psi_{s,\beta}','\psi_{r,\alpha}','\psi_{r,\beta}');
 xlim([0,t_max]);
 grid on;
 
-% Plot inputs
-figure(2)
 
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+% Plot inputs
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ctrler = 1; % change 1 to 2 or 3 to get respective control inputs
+
+figure(2)
 subplot(3,1,1);
 plot(t_ctrl_vec,squeeze(u_vec(1,ctrler,:))) 
 subplot(3,1,2);
@@ -52,7 +65,10 @@ ylim([-1.2,1.2]);
 xlim([0,t_max]);
 grid on;
 
+
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Plot torque
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 T_sim = 1/sys.pf*sys.X_m/sys.D*(squeeze(psi_r_sim(1,:,:)).*squeeze(psi_s_sim(2,:,:)) - squeeze(psi_r_sim(2,:,:)).*squeeze(psi_s_sim(1,:,:)));
 
 figure(3);
@@ -69,7 +85,10 @@ xlabel('time [s]');
 ylabel('torque [pu]');
 grid on;
 
+
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Plot stator flux
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Psi_sim = squeeze(vecnorm(psi_s_sim,2,1));
 
 figure(4);
@@ -83,7 +102,10 @@ ylim([0,1.2]);
 xlim([0,t_max]);
 grid on;
 
-% Iterations (only useful to compare performance of different guesses)
+
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+% Solumtion updates (only useful to compare performance of different initial solutions of branch-and-bound)
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ic = reshape([zeros(1,length(iter_count)); iter_count(1,:); zeros(1,length(iter_count))],1,3*length(iter_count));
 tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 ic1 = reshape([zeros(1,length(iter_count)); iter_count(2,:); zeros(1,length(iter_count))],1,3*length(iter_count));
@@ -106,7 +128,10 @@ ylabel('Torque [pu] / # Iterations [10]')
 legend('Torque reference', 'Initial solution (1)', 'Initial Solution (2)', 'Initial Solution (3)');
 grid on;
 
+
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Nodes
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 nc = reshape([zeros(1,length(node_count)); node_count(1,:); zeros(1,length(node_count))],1,3*length(node_count));
 tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 nc1 = reshape([zeros(1,length(node_count)); node_count(2,:); zeros(1,length(node_count))],1,3*length(node_count));
@@ -129,7 +154,10 @@ ylabel('Torque [pu] / # Nodes [10^3]')
 legend('Torque reference', 'Bad guess', 'Ed guess', 'Opt guess');
 grid on;
 
-% % Time
+
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+% Time
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % nc = reshape([zeros(1,length(time_count)); time_count(1,:); zeros(1,length(time_count))],1,3*length(time_count));
 % tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 % J_acc_2 = reshape([zeros(1,length(time_count)); time_count(2,:); zeros(1,length(time_count))],1,3*length(time_count));
@@ -148,10 +176,11 @@ grid on;
 % ylabel('Torque [pu] / # Time [s]')
 % legend('Torque reference', 'Ed guess', 'Opt guess');
 % grid on;
-end
 
+
+% *************************************************************************
 %% Printing
-% 
+% *************************************************************************
 fprintf('\n--------------------------------------------------------\n');
 
 % Print elapsed simulation time
@@ -175,11 +204,5 @@ fprintf('Absolute flux rms error: (Opt)                %.4fe-3 \n', ...
     norm(Psi_sim(1,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 fprintf('Absolute flux rms error: (Ed guess)           %.4fe-3 \n', ...
     norm(Psi_sim(2,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
-
-% % Print accumulated cost
-% fprintf('Accumulated tracking cost: (Opt)              %.4fe-3 \n', ...
-%     J_acc_0(end)/length(J_acc_0)*1e3);
-% fprintf('Accumulated tracking cost: (Ed guess)         %.4fe-3 \n', ...
-%     J_acc_1(end)/length(J_acc_1)*1e3);
 
 

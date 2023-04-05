@@ -25,9 +25,9 @@ sys = SystemSetup(sys);
 sim = SimulationSetup(sys, sim, 'exact');
 
 % Controllers
-[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, J_opt as reference
-[ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1); % controller with only ed guess
-[ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed guess and sdp
+[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller initialized with ed guess
+[ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1); % controller initialized with opt guess
+[ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller initialized with bad guess
 n_costs  = ctrl0.n_costs + ctrl1.n_costs + ctrl2.n_costs; % required length of cost term
 n_c = 3; % number of controllers that are simulated
 

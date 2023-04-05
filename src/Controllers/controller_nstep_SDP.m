@@ -61,7 +61,7 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
             U_sdp = U_hat(:,idx);
             % Take best guess
             if J_sdp < J_bnb
-                if ctrl.volatile
+                if ctrl.verbose
                     disp('Used SDP');
                 end
                 U_opt = U_sdp;

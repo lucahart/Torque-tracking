@@ -58,7 +58,7 @@ function [u_hat] = run_sdp(ctrl, x, u_prev, ref)
             u_hat = sign(value(X(1)))*round(value(X(2:end,1)));
         case "diagonal"
             % Round sqrt of diagonal
-            u_hat = sign(value(X(:,1))).*...
+            u_hat = sign(value(X(1)))*sign(value(X(2:end,1))).*...
                 round(sqrt(diag(value(X(2:end,2:end)))));
         case "eigen vector"
             % Round first eigenvector normally
