@@ -33,7 +33,7 @@ function sim = SimulationSetup(sys, sim_pre, discretization)
     %   sim.ramps: Cell-object containing all information about the ramps
     %     that are applied to the reference. See generate_reference for a
     %     detailled documentation of the used format.
-    %     Default: ramps = {[1 100e-6 0 2 1], [1 8 1 10 0]}
+    %     Default: ramps = {[1 0 0 2 1]}
     %   sim.x_0: Initial state of the system.
     %     Default: x_0 = [-.99 -.15 -.91 .07]' (steady-state, Psi=1, T=.5)
     %   sim.u_0: Initial input of the system.
@@ -50,6 +50,9 @@ function sim = SimulationSetup(sys, sim_pre, discretization)
     sim.apply_only_opt = 0;
     sim.steps = {[1 3 .2], [1 7 1]};
     sim.ramps = {[1 0 0 2 1]};
+    sim.seed = 3;
+    sim.a = -2.5e-3;
+    sim.b = 2.5e-3;
     
     % Initial state and input (steady-state values)
     sim.x_0 = [-.99 -.15 -.91 .07]';
@@ -68,6 +71,9 @@ function sim = SimulationSetup(sys, sim_pre, discretization)
             sim.(fn{i}) = sim_pre.(fn{i});
         end
     end
+    
+    % Set up random generator
+    rng(sim.seed);
     
     % Calculate discrete-time matrices
     % Specification of either exact euler or forward euler discretization

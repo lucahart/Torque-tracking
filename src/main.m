@@ -75,10 +75,6 @@ u_vec(:,:,1) = u_prev;
 t_sim = tic;
 for k = 1:n_controller_samples
     
-    if k == 1407
-        disp(k);
-    end
-    
     % Apply noise
     y = x + rand*(sim.b-sim.a)+sim.a;
     

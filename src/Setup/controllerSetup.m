@@ -19,7 +19,7 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     % The following parametes are specified for all contorller types:
     %   ctrl.lam_u: Switching penalty of the cost function. 
     %     lam_u \in [0,inf).
-    %     Default: lam_u = 1.2e-4 for N=1, lam_u = 6.15e-4 for N=5
+    %     Default: lam_u = 1.2e-4 for N=1, lam_u = 1.8e-3 for N=5
     %   ctrl.lam_T: Torque- to absolute stator flux penalty ratio.
     %     lam_T \in [0,1].
     %     Default: lam_T = .052
@@ -67,7 +67,7 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     %     J_opt - J_prime > eps for updating U_opt in the branch-and-bound
     %     algorithm
     %     Default: eps = 1e-12.
-    %   ctrl.volatile: Prints whether the SDP was used when set to 1. No
+    %   ctrl.verbose: Prints whether the SDP was used when set to 1. No
     %     printing if volatile = 0.
     %     Default: volatile = 0
 
@@ -89,7 +89,7 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep.N = 5;
 
     % Multi-step controller with speed-up
-    ctrl_nstep_SDP.lam_u = 6.15e-4;
+    ctrl_nstep_SDP.lam_u = 3.5e-3;
     ctrl_nstep_SDP.lam_T = .052;
     ctrl_nstep_SDP.T_s = 100e-6;
     ctrl_nstep_SDP.N = 5;
@@ -97,7 +97,7 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep_SDP.estimate = 'all';
     ctrl_nstep_SDP.type = 'ed guess';
     ctrl_nstep_SDP.eps = 1e-12;
-    ctrl_nstep_SDP.volatile = 0;
+    ctrl_nstep_SDP.verbose = 0;
 
     
     % *********************************************************************

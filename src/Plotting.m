@@ -67,6 +67,8 @@ ylim([-1.2,1.2]);
 xlim([0,t_max]);
 grid on;
 
+% end % end comment out of plots
+
 
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Plot torque
@@ -79,7 +81,7 @@ hold on;
 plot(t_sim_vec, T_sim(1,:), 'b');
 plot(t_sim_vec, T_sim(2,:), 'r');
 plot(t_sim_vec, T_sim(3,:), 'g');
-plot(t_sim_vec, T_sim(3,:), 'm');
+% plot(t_sim_vec, T_sim(3,:), 'm');
 hold off;
 
 title('Torque');
@@ -102,7 +104,7 @@ hold on;
 plot(t_sim_vec, Psi_sim(1,:), 'b');
 plot(t_sim_vec, Psi_sim(2,:), 'r');
 plot(t_sim_vec, Psi_sim(3,:), 'g');
-plot(t_sim_vec, Psi_sim(3,:), 'm');
+% plot(t_sim_vec, Psi_sim(3,:), 'm');
 hold off;
 
 title('Absolute stator flux');
@@ -110,8 +112,6 @@ legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location',
 ylim([0,1.2]);
 xlim([0,t_max]);
 grid on;
-
-end % end comment out of plots
 
 
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -155,7 +155,7 @@ hold on;
 plot(tc,nc0/1000,'b');
 plot(tc+ctrl0.T_s/6,nc1/1000,'r');
 plot(tc+ctrl0.T_s*2/6, nc2/1000,'g');
-plot(tc+ctrl0.T_s*3/6, nc3/1000,'m');
+% plot(tc+ctrl0.T_s*3/6, nc3/1000,'m');
 hold off;
 
 title('Nodes')
@@ -213,7 +213,7 @@ hold on;
 plot(t_ctrl_vec,J_acc_0,'b');
 plot(t_ctrl_vec,J_acc_1,'r');
 plot(t_ctrl_vec,J_acc_2,'g');
-plot(t_ctrl_vec,J_acc_3,'m');
+% plot(t_ctrl_vec,J_acc_3,'m');
 hold off;
 
 title('Accumulated Cost')
@@ -222,7 +222,7 @@ xlabel('time [s]')
 ylabel('Torque [pu] / Accumulated Cost')
 legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','northwest');
 grid on;
-
+end
 
 % *************************************************************************
 %% Printing
@@ -235,37 +235,39 @@ fprintf('Elapsed simulation time:     %.2fs \n\n', t_sim);
 % Print average switching frequency
 del_u0 = abs([sim.u_0 squeeze(u_vec(:,1,1:end-1))] - squeeze(u_vec(:,1,:)));
 f_sw0 = 1/(12*t_max)*sum(del_u0, 'all');
-del_u1 = abs([sim.u_0 squeeze(u_vec(:,2,1:end-1))] - squeeze(u_vec(:,2,:)));
-f_sw1 = 1/(12*t_max)*sum(del_u1, 'all');
-del_u2 = abs([sim.u_0 squeeze(u_vec(:,3,1:end-1))] - squeeze(u_vec(:,3,:)));
-f_sw2 = 1/(12*t_max)*sum(del_u2, 'all');
+% del_u1 = abs([sim.u_0 squeeze(u_vec(:,2,1:end-1))] - squeeze(u_vec(:,2,:)));
+% f_sw1 = 1/(12*t_max)*sum(del_u1, 'all');
+% del_u2 = abs([sim.u_0 squeeze(u_vec(:,3,1:end-1))] - squeeze(u_vec(:,3,:)));
+% f_sw2 = 1/(12*t_max)*sum(del_u2, 'all');
 fprintf('Average switching frequency (ctrl0): %.2fHz \n', f_sw0);
-fprintf('Average switching frequency (ctrl1): %.2fHz \n', f_sw1);
-fprintf('Average switching frequency (ctrl2): %.2fHz \n\n', f_sw2);
+% fprintf('Average switching frequency (ctrl1): %.2fHz \n', f_sw1);
+% fprintf('Average switching frequency (ctrl2): %.2fHz \n\n', f_sw2);
 
 % Print torque rms error
+T_sim = 1/sys.pf*sys.X_m/sys.D*(squeeze(psi_r_sim(1,:,:)).*squeeze(psi_s_sim(2,:,:)) - squeeze(psi_r_sim(2,:,:)).*squeeze(psi_s_sim(1,:,:)));
 fprintf('Torque rms error: (ctrl0)            %.4fe-3 \n', ...
     norm(T_sim(1,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
-fprintf('Torque rms error: (ctrl1)            %.4fe-3 \n', ...
-    norm(T_sim(2,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
-fprintf('Torque rms error: (ctrl2)            %.4fe-3 \n\n', ...
-    norm(T_sim(3,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
+% fprintf('Torque rms error: (ctrl1)            %.4fe-3 \n', ...
+%     norm(T_sim(2,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
+% fprintf('Torque rms error: (ctrl2)            %.4fe-3 \n\n', ...
+%     norm(T_sim(3,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
 
 % Print absolute flux rms error
+Psi_sim = squeeze(vecnorm(psi_s_sim,2,1));
 fprintf('Absolute flux rms error: (ctrl0)     %.4fe-3 \n', ...
     norm(Psi_sim(1,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
-fprintf('Absolute flux rms error: (ctrl1)     %.4fe-3 \n', ...
-    norm(Psi_sim(2,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
-fprintf('Absolute flux rms error: (ctrl2)     %.4fe-3 \n\n', ...
-    norm(Psi_sim(3,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
+% fprintf('Absolute flux rms error: (ctrl1)     %.4fe-3 \n', ...
+%     norm(Psi_sim(2,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
+% fprintf('Absolute flux rms error: (ctrl2)     %.4fe-3 \n\n', ...
+%     norm(Psi_sim(3,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 
-% Print accumulated cost
-fprintf('Average tracking cost: (ctrl0)       %.4fe-3 \n', ...
-    J_acc_0(end)/length(J_acc_0)*1e3);
-fprintf('Average tracking cost: (ctrl1)       %.4fe-3 \n', ...
-    J_acc_1(end)/length(J_acc_1)*1e3);
-fprintf('Average tracking cost: (ctrl2)       %.4fe-3 \n', ...
-    J_acc_2(end)/length(J_acc_2)*1e3);
+% % Print accumulated cost
+% fprintf('Average tracking cost: (ctrl0)       %.4fe-3 \n', ...
+%     J_acc_0(end)/length(J_acc_0)*1e3);
+% fprintf('Average tracking cost: (ctrl1)       %.4fe-3 \n', ...
+%     J_acc_1(end)/length(J_acc_1)*1e3);
+% fprintf('Average tracking cost: (ctrl2)       %.4fe-3 \n', ...
+%     J_acc_2(end)/length(J_acc_2)*1e3);
 
 
 

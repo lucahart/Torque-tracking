@@ -28,8 +28,8 @@ function sys = SystemSetup(sys_pre)
     R_s = 0.0108;
     R_r = 0.0091;
     X_m = 2.349;
-    X_ls = 0.1493*2;
-    X_lr = 0.1104*2;
+    X_ls = 0.1493;
+    X_lr = 0.1104;
     v_dc = 1.930;
     std = 5e-4; % noise standard deviation
     
