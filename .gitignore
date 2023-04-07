@@ -3,7 +3,7 @@
 *.asv
 *.docx
 *.pptx
-*.pdf
+%*.pdf
 *.aux
 *.bbl
 *.blg
@@ -11,3 +11,5 @@
 *.out
 *.gz
 *.png
+*.toc
+*.mat
