@@ -1,11 +1,11 @@
 
-\chapter{FCS-MPC for Torque Tracking in Real-Time}
+\chapter{High-Speed FCS-MPC for Torque Tracking}
 
 
 
 \section{Cost reformulation for SDP}
 
-\subsection{Matrices for Full Horizon Dynamics}
+\subsection{Matrices for full horizon dynamics}
 
 Next, we will obtain a direct representation of the cost with matrices. Therefore, we introduce the full-horizon variables in Table \ref{tab:0}.
 \begin{table}[h!]
@@ -81,9 +81,9 @@ and
 
 
 
-\subsection{Matrices for Torque, Stator Flux, and Switching Penalty}
+\subsection{Matrix representations of torque, stator flux, and switching penalty}
 Stator flux:
-\begin{align*}
+\begin{align}\label{eq:3}
 	\Psi_s^2(k+l) &= ||\b{\psi}_s(k+l)||_2^2 
 	= \b{\psi}_s^\top(k+l)\b{\psi}_s(k+l)
 	= \left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right)^\top\left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right) \\
@@ -93,14 +93,14 @@ Stator flux:
 	+ \b{U}^\top(k)\b{\Upsilon}_\s^\top\b{\Upsilon}_\s\b{U}(k)\\
 	&= [\begin{array}{cc}
 		1 & \b{U}^\top(k)
-	\end{array}] \left[\begin{array}{cc}
+	\end{array}] \underbrace{ \left[\begin{array}{cc}
 		\b{x}^\top(k) \b{\Gamma}_\s^\top\b{\Gamma}_\s \b{x}(k) & \b{x}^\top(k)\b{\Gamma}_\s^\top\b{\Upsilon}_\s \\
 		\b{\Upsilon}_\s^\top\b{\Gamma}_\s\b{x}(k) & \b{\Upsilon}_\s^\top\b{\Upsilon}_\s
-	\end{array}\right] \left[\begin{array}{c}
+	\end{array}\right] }_{\b{W}} \left[\begin{array}{c}
 		1 \\
 		\b{U}(k)
 	\end{array}\right]
-\end{align*}
+\end{align}
 %Full horizon stator flux:
 %\begin{align*}
 %	\b{\Psi}_s^2(k) = \left[\begin{array}{c}
@@ -110,7 +110,7 @@ Stator flux:
 %\end{align*}
 %where the squared-operation is an element-wise operation.
 Torque:
-\begin{align*}
+\begin{align}
 	T(k+l) &= \Tfac\b{\psi}_r^\top(k+l)\b{\Xi}\b{\psi}_s(k+l)
 	= \Tfac\left(\b{\Gamma}_r\b{x}(k) + \b{\Upsilon}_r\b{U}(k)\right)^\top \b{\Xi} \left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right) \\
 	&= \Tfac\left(\b{x}^\top(k)\b{\Gamma}_r^\top \b{\Xi} \b{\Gamma}_r \b{x}(k)
@@ -119,14 +119,14 @@ Torque:
 	+ \b{U}^\top(k)\b{\Upsilon}_r^\top \b{\Xi} \b{\Upsilon}_\s\b{U}(k)\right) \\
 	&= \Tfac[\begin{array}{cc}
 		1 & \b{U}^\top(k)
-	\end{array}] \left[\begin{array}{cc}
+	\end{array}] \underbrace{ \left[\begin{array}{cc}
 		\b{x}^\top(k) \b{\Gamma}_r^\top \b{\Xi}\b{\Gamma}_\s \b{x}(k) & \b{x}^\top(k)\b{\Gamma}_r^\top \b{\Xi} \b{\Upsilon}_\s \\
 		\b{\Upsilon}_r^\top \b{\Xi} \b{\Gamma}_\s\b{x}(k) & \b{\Upsilon}_r^\top \b{\Xi} \b{\Upsilon}_\s
-	\end{array}\right] \left[\begin{array}{c}
+	\end{array}\right] }_{\b{Q}} \left[\begin{array}{c}
 		1 \\
 		\b{U}(k)
 	\end{array}\right]
-\end{align*}
+\end{align}
 %\begin{align*}
 %	\b{T}(k) &= \left[\begin{array}{c}
 %		T(k+1) \\
@@ -147,15 +147,15 @@ Torque:
 %	\end{array}\right]\b{\psi}_s(k) := \Tfac\b{\psi}_r(k) \Xi \b{\psi}_s(k)
 %\end{align*}
 The switching penalty is a term that depends on each phase at each time step. Thus, the switching transition $\Delta\b{u}(k)$ cannot be calculated in closed form, but has to be split up into each phase. The term $\Delta \b{u}(k)$ additionally depends on the previous input, which necessitates the usage of the constant term. Next, the polynomial decomposition for two ($\A$, $\B$) of three phases at time step $k$ are are shown.
-\begin{align*}
+\begin{align}
 	\Delta u_\A(k) &= u_\A(k) - u_\A(k-1) \\
 	&= [\begin{array}{cccccc}
 		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
 	\end{array}]
-	\left[\begin{array}{ccc}
+	\underbrace{ \left[\begin{array}{ccc}
 		-\b{u}_\A(k-1) & 1 & \0 \\
 		& \0 & 
-	\end{array}\right]
+	\end{array}\right] }_{\b{Z}_{a,0}}
 	\left[\begin{array}{c}
 		1 \\
 		\b{u}_\A(k)\\
@@ -164,8 +164,8 @@ The switching penalty is a term that depends on each phase at each time step. Th
 		\vdots\\
 		\b{u}_\C(k+N-1)
 	\end{array}\right]
-\end{align*}
-\begin{align*}
+\end{align}
+\begin{align}
 	\Delta u_\B(k) &= u_\B(k) - u_\B(k-1) \\
 	&= [\begin{array}{cccccc}
 		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
@@ -182,9 +182,9 @@ The switching penalty is a term that depends on each phase at each time step. Th
 		\vdots\\
 		\b{u}_\C(k+N-1)
 	\end{array}\right]
-\end{align*}
+\end{align}
 The computation of all other switching transitions depend on the Inputs $\b{U}(k)$ so that the polynomial presentation can be generalized to 
-\begin{align*}
+\begin{align}
 	\Delta u_\A(k) &= u_\A(k) - u_\A(k-1) \\
 	&= [\begin{array}{cccccc}
 		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
@@ -201,9 +201,9 @@ The computation of all other switching transitions depend on the Inputs $\b{U}(k
 		\vdots\\
 		\b{u}_\C(k+N-1)
 	\end{array}\right]
-\end{align*}
+\end{align}
 for the a-phase and
-\begin{align*}
+\begin{align}\label{eq:4}
 	\Delta u_\B(k) &= u_\B(k+l) - u_\B(k+l-1) \\
 	&= [\begin{array}{cccccc}
 		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
@@ -220,10 +220,56 @@ for the a-phase and
 		\vdots\\
 		\b{u}_\C(k+N-1)
 	\end{array}\right]
-\end{align*}
+\end{align}
 for the b-phase, where $l \in \{1,\ 2, \ldots,\ N-1\}$.
 
 \subsection{Final cost formulation}
+The full horizon cost stated in \eqref{eq:2} is non-convex because of the torque- and absolute stator flux tracking terms. Using the definitions \eqref{eq:3} to \eqref{eq:4}, we get
+\begin{align}
+	J_N(k) &= \lambda_T \sum_{l = k}^{k+N-1} \left|\left|T^*(l+1)-\Tfac [1\ \b{U}^\top(k)]\b{Q}\left[\begin{array}{c}
+		1\\
+		\b{U}(k)
+	\end{array}\right]\right|\right|_2^2 \\
+	&\ + (1-\lambda_T) \sum_{l = k}^{k+N-1} \left|\left|(\Psi_s^*(l+1))^2-[1\ \b{U}^\top(k)]\b{W}\left[\begin{array}{c}
+		1\\
+		\b{U}(k)
+	\end{array}\right]\right|\right|_2^2 \nonumber \\
+	&\ + \lambda_u \sum_{l \in \{k,\ldots,k+N-1\}, z \in \{\A,\B,\C\}}^{k+N-1} \left|[1\ \b{U}^\top(k)]\b{Z}_{z,l}\left[\begin{array}{c}
+		1\\
+		\b{U}(k)
+	\end{array}\right]\right|. \nonumber
+\end{align}
+Using the identity
+\begin{equation*}
+	\b{v}^\top \b{Q} \b{v} = \mathrm{trace} \left( \b{Qvv}^\top \right),
+\end{equation*}
+we get
+\begin{align*}
+	J_N(k) &= \lambda_T \sum_{l = k}^{k+N-1} \left|\left|T^*(l+1)-\Tfac \mathrm{trace} \left(\b{QX}\right) \right|\right|_2^2 \\
+	&\ + (1-\lambda_T) \sum_{l = k}^{k+N-1} \left|\left|(\Psi_s^*(l+1))^2-\mathrm{trace} \left(\b{WX}\right)\right|\right|_2^2 \nonumber \\
+	&\ + \lambda_u \sum_{l \in \{k,\ldots,k+N-1\}, z \in \{\A,\B,\C\}}^{k+N-1} \left| \mathrm{trace} \left( \b{Z}_{z,l}\b{X} \right) \right|, \nonumber
+\end{align*}
+where
+\begin{equation}
+	\b{X} = \left[\begin{array}{c}
+		1\\
+		\b{U}(k)
+	\end{array}\right] [1\ \b{U}^\top(k)].
+\end{equation}
+This cost formulation can later be used for the SDP relaxation.
+\begin{align*}
+	\b{U}_\augp^\opt(k) = \ &\argmin_{\b{U}_\augp(k)} J_N(k) \\
+	&\begin{array}{llr}
+		\mathrm{s.t.} & \b{x}_\augp(l+1) = \b{A}_\augp\b{x}_\augp(l) + \b{B}_\augp\b{u}_\augp(l) + \b{D}_\augp\b{v}_g(l), & \forall l\in\{k, \ldots,\ k + N_\p-1\}\sp \\
+		& \b{y}_\augp(l+1) = \b{C}_\augp \b{x}_\augp(l+1), & \forall l\in\{k, \ldots,\ k + N_\p - 1\}\sp \\
+		& \b{u}_\ph(l) \in \{-1,\ 0,\ 1\}^{3}, &\forall l\in\{k, \ldots,\ k+N_\p - 1\}\sp \\
+		& \b{p}(l) = | \Delta \b{u}_\ph(l) |, & \forall l\in\{k, \ldots,\ k + N_\p-1\}.
+	\end{array} \nonumber
+\end{align*}
+
+\subsection{SDP formulation}
+We will now use the new cost term to formulate the optimization problem
+
 
 
 

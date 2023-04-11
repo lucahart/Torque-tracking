@@ -5,7 +5,7 @@
 
 \section{Modeling}
 
-\subsection{Flux Dynamics}
+\subsection{Flux dynamics}
 We utilize the discrete time dynamics of the stator and rotor fluxes $\b{\psi}_s$ and $\b{\psi}_r$ from \cite{gey_book}:
 \begin{align*}
 	\b{\psi}_s(k+1) &= \b{A}_1\b{\psi}_s(k) + \b{B}_1\b{\psi}_r(k) + \b{B}_2\b{u}(k), \\
@@ -37,7 +37,7 @@ and
 	&\ + \left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-3}\b{Bu}(k+1) + \ldots + \left[\b{B}_3\ \b{A}_2\right]\b{Bu}(k+l-1). \nonumber
 \end{align}
 
-\subsection{Torque and Absolute Stator Flux}
+\subsection{Torque and absolute stator flux}
 
 The absolute stator flux is computed via the $\ell_2$-norm,
 \begin{equation*}
@@ -70,7 +70,7 @@ where $\mathrm{pf},\ X_m,$ and $D$ resemble machine parameters and are summarize
 
 \section{Conventional FCS-MPC for torque tracking}
 
-\subsection{Problem Formulation}
+\subsection{Problem formulation}
 
 The 1-step cost function from \cite{gey_book} is specified as:
 \begin{equation*}
@@ -78,10 +78,10 @@ The 1-step cost function from \cite{gey_book} is specified as:
 \end{equation*}
 where $T^*(k)$ and $\Psi_s^*(k)$ refer to the Torque- and absolute stator flux references, respectively.
 Using an extended horizon of $N \in \mathbb{N}$ leads to the cost function
-\begin{equation}
-	J_N(k) = \sum_{l = k}^{k+N-1} \lambda_T ||T^*(l+1)-T(l+1)||_2 + (1-\lambda_T) ||(\Psi_s^*(l+1))^2-(\Psi_s(l+1))^2||_2 + \lambda_u ||\Delta \b{u}(l)||_1.
+\begin{equation}\label{eq:2}
+	J_N(k) = \sum_{l = k}^{k+N-1} \lambda_T ||T^*(l+1)-T(l+1)||_2^2 + (1-\lambda_T) ||(\Psi_s^*(l+1))^2-(\Psi_s(l+1))^2||_2^2 + \lambda_u ||\Delta \b{u}(l)||_1.
 \end{equation}
 
-\subsection{Solving with branch-and-bound Algorithms}
+\subsection{Solving with branch-and-bound algorithms}
 
 

@@ -22,7 +22,7 @@ Besides the tracking performance of the controllers, the computational time play
 %The quality of the initial guess of the branch-and-bound algorithm can be measured by the number of solution updates performed. In the literature they are also referred to as iterations \cite{gey_book}. We will not use this term to avoid confusion with the gradient descent iterations. A solution update is performed, if the branch-and-bound algorithm changes its current believe of the optimal solution at a leaf node of the search tree. Thus, 0 solution updates mean that the initial guess was optimal, $n$ solution updates mean the branch-and-bound algorithm updated the initial solution $n$ times to obtain the optimal solution.
 
 
-\section{Parameter Choices and Simulation Setting}
+\section{Parameter choices and simulation setting}
 There are view hyper parameters that have to be chosen for the controller. The cost function contains the torque weighting factor $\lambda_T$, which discounts the torque ripple to prioritize the flux magnitude ripple, without changing the cost ratio between these two terms and the switching penalty. % Maybe put this sentence to the introduction of the cost function ...
 We use the same parameter choice $\lambda_T = 0.052$. In addition we have to decide about the switching penalty $\lambda_u$. It is chosen to $\lambda_u = 3.5\times10^{-3}$ to achieve a switching frequency of approximately $f_\sw = \SI{215}{\hertz}$. The sampling intervals of all controllers are chosen to $T_\s = \SI{100}{\micro\second}$ and the horizons are $N = 5$. 
 Additionally, in the case of a parent node limit we use $n_{p,max} = 250$, unless stated otherwise. Table \ref{tab:2} contains a list of all controller parameters.
@@ -84,7 +84,7 @@ rotor has a fundamental frequency of $f_1 = \SI{1494}{\rpm} = \SI{24.9}{\hertz}$
 \end{table}
 
 
-\section{Advantages of Multi-Step control}
+\section{Advantages of multi-step control}
 The problem of long solving times of the branch-and-bound algorithm is strongly coupled with the length of the control horizon $N$. To show that a longer horizon leads to a better performance, we ran simulations with $N\in\{1,3,5\}$ and checked its influence on the rms tracking errors of the torque and absolute stator flux. All values are listed in Table \ref{tab:3}.
 \begin{table}[h!]
 	\centering
@@ -106,7 +106,7 @@ It becomes clear that increasing the horizon leads to improved tracking. Compari
 
 \section{Computational feasibility}
 
-\subsection{Drawbacks of Conventional Branch-and-Bound Algorithms}\label{sec:1}
+\subsection{Drawbacks of conventional branch-and-bound algorithms}\label{sec:1}
 Being non-convex, torque tracking imposes a major challenge on the FCS-MPC formulation. The non-convexity does not allow us to use the sphere decoder discussed in \cite{dorf_2019}. When deciding upon an input, the sphere decoder has an intuition about the possible future cost. As a result, it is very fast in pruning sub-trees that do not belong to the optimal solution. In \cite{NL-SDA} the weakness of conventional branch-and-bound algorithms can be seen. We can achieve a major decrease in computational time, when a more meaning-full lower bound is introduced. It helps the decoder to estimate the minimum cost in the future, when applying a certain input. In the discussed case a speed-up of more than three times on average and up to twenty times in single cases was achieved.
 
 In \cite{NL-SDA} the branch-and-bound algorithm was applied to a non-linear function for upper-bounding the converter's switching frequency. The major advantage was the existence of a simple lower bound on the switching frequency; if there is no switching applied. In the case of torque tracking such a lower bound does not exist. The applicability for estimating future branch costs via SDP relaxations for torque tracking will be further discussed in Section \ref{sec:0}.
