@@ -89,11 +89,11 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep.N = 5;
 
     % Multi-step controller with speed-up
-    ctrl_nstep_SDP.lam_u = 3.5e-3;
+    ctrl_nstep_SDP.lam_u = 6.15e-3;
     ctrl_nstep_SDP.lam_T = .052;
-    ctrl_nstep_SDP.T_s = 100e-6;
+    ctrl_nstep_SDP.T_s = 25e-6;
     ctrl_nstep_SDP.N = 5;
-    ctrl_nstep_SDP.node_limit = 100;
+    ctrl_nstep_SDP.node_limit = 350;
     ctrl_nstep_SDP.estimate = 'all';
     ctrl_nstep_SDP.type = 'ed guess';
     ctrl_nstep_SDP.eps = 1e-12;

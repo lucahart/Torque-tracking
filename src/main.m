@@ -13,7 +13,7 @@ ctrl3 = struct();
 % Quick setup of simulation parameters (set and remove whatever you want)
 % -------------------------------------------------------------------------
 ctrl0.node_limit = inf;
-ctrl2.type = 'ed & sdp guess';
+% ctrl2.type = 'ed & sdp guess';
 ctrl3.verbose = 1;
 ctrl3.type = 'ed guess + sdp';
 % -------------------------------------------------------------------------

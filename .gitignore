@@ -1,9 +1,9 @@
-*/YALMIP*
+%*/YALMIP*
 *.txt
 *.asv
 *.docx
 *.pptx
-%*.pdf
+*.pdf
 *.aux
 *.bbl
 *.blg
