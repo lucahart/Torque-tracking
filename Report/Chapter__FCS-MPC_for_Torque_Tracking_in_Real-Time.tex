@@ -1,11 +1,11 @@
 
-\chapter{High-Speed FCS-MPC for Torque Tracking}
+\chapter{SDP relaxation of FCS-MPC for Torque Tracking}
 
 
 
-\section{Cost reformulation for SDP}
+\section{Full horizon reformulations}
 
-\subsection{Matrices for full horizon dynamics}
+\subsection{Full horizon vectors and dynamics}
 
 Next, we will obtain a direct representation of the cost with matrices. Therefore, we introduce the full-horizon variables in Table \ref{tab:0}.
 \begin{table}[h!]
@@ -28,75 +28,37 @@ Next, we will obtain a direct representation of the cost with matrices. Therefor
 \end{table}\\
 While the references $\b{T}^*(k),\ \b{\Psi}^*(k)$ are given, we will have to find a formulation to compute the actual values of $\b{\Psi}_s(k)$ and $\b{T}(k)$.\\
 Utilizing \eqref{eq:0} and \eqref{eq:1} we get the matrix representations
-\begin{equation*}
+\begin{equation}\label{eq:10}
 	\psi_s(k+l) = \underbrace{\left[\b{A}_1\ \b{B}_1\right]\b{A}^{l-1}}_{\b{\Gamma}_\s}\b{x}(k) + \underbrace{\left[\begin{array}{ccccc}
 			\left[\b{A}_1\ \b{B}_1\right]\b{A}^{l-2}\b{B} & \left[\b{A}_1\ \b{B}_1\right]\b{A}^{l-3}\b{B} & \ldots & \left[\b{A}_1\ \b{B}_1\right]\b{B} & \b{B}_2
 		\end{array} \right]}_{\b{\Upsilon}_\s}\b{U}(k)
-\end{equation*}
+\end{equation}
 and
-\begin{equation*}
+\begin{equation}\label{eq:11}
 	\psi_r(k+l) = \underbrace{\left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-1}}_{\b{\Gamma}_r}\b{x}(k) + \underbrace{\left[\begin{array}{ccccc}
 			\left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-2}\b{B} & \left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-3}\b{B} & \ldots & \left[\b{B}_3\ \b{A}_2\right]\b{B} & \b{0}
 		\end{array} \right]}_{\b{\Upsilon}_r}\b{U}(k).
-\end{equation*}
-
-%\clearpage
-%
-%This can further be used to obtain the full horizon of the stator flux
-%\begin{align*}
-%	\b{\psi}_s(k) &=  \left[	\b{A}_1 \b{B}_1\right] \left[\begin{array}{c}
-%		\I \\
-%		\b{A} \\
-%		\b{A}^2 \\
-%		\vdots \\
-%		\b{A}^{N-1}
-%	\end{array}\right] \b{x}(k) + 
-%\left[\begin{array}{ccccc}
-%	\b{B}_2 & & & & \b{0} \\
-%	\left[\b{A}_1\ \b{B}_1\right]\b{B} & \b{B}_2 & & & \\
-%	\left[\b{A}_1\ \b{B}_1\right]\b{AB} & \left[\b{A}_1\ \b{B}_1\right]\b{B} & \b{B}_2 && \\
-%	\vdots & \vdots & \vdots & \ddots & \\
-%	\left[\b{A}_1\ \b{B}_1\right]\b{A}^{N-2}\b{B} & \left[\b{A}_1\ \b{B}_1\right]\b{A}^{N-3}\b{B} & \left[\b{A}_1\ \b{B}_1\right]\b{A}^{N-4}\b{B} & \cdots & \b{B}_2 \\
-%\end{array}\right]\b{U}(k) \\
-%	&=: \b{\Gamma}_s\b{x}(k) + \b{\Upsilon}_s\b{U}(k)
-%\end{align*}
-%and the rotor flux
-%\begin{align*}
-%	\b{\psi}_r(k) &=  \left[\b{B}_3 \b{A}_2\right] \left[\begin{array}{c}
-%		\I \\
-%		\b{A} \\
-%		\b{A}^2 \\
-%		\vdots \\
-%		\b{A}^{N-1}
-%	\end{array}\right] \b{x}(k) + 
-%	\left[\begin{array}{ccccc}
-%		\b{0} & & & & \b{0} \\
-%		\left[\b{B}_3 \b{A}_2\right] \b{B} & \b{0} & & & \\
-%		\left[\b{B}_3 \b{A}_2\right] \b{AB} & \left[\b{B}_3 \b{A}_2\right] \b{B} & \b{0} && \\
-%		\vdots & \vdots & \vdots & \ddots & \\
-%		\left[\b{B}_3 \b{A}_2\right] \b{A}^{N-2}\b{B} & \left[\b{B}_3 \b{A}_2\right] \b{A}^{N-3}\b{B} & \left[\b{B}_3 \b{A}_2\right] \b{A}^{N-4}\b{B} & \cdots & \b{0} \\
-%	\end{array}\right]\b{U}(k)\\
-%	&=: \b{\Gamma}_r\b{x}(k) + \b{\Upsilon}_r\b{U}(k).
-%\end{align*}
+\end{equation}
+Note that the matrices defined in \eqref{eq:10} and \eqref{eq:11} are independent of the current time and state. Thus they can be computed offline.
 
 
-
-\subsection{Matrix representations of torque, stator flux, and switching penalty}
-Stator flux:
+\subsection{Matrix representations of full horizon polynomials}
+We will now drive matrices that represent the polynomials of the torque and stator flux magnitude.
+The derivation of the stator flux magnitude is
 \begin{align}\label{eq:3}
 	\Psi_s^2(k+l) &= ||\b{\psi}_s(k+l)||_2^2 
 	= \b{\psi}_s^\top(k+l)\b{\psi}_s(k+l)
-	= \left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right)^\top\left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right) \\
+	= \left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right)^\top\left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right) \nonumber \\
 	&= \b{x}^\top(k)\b{\Gamma}_\s^\top \b{\Gamma}_\s \b{x}(k)
 	+ \b{x}^\top(k)\b{\Gamma}_\s^\top\b{\Upsilon}_\s\b{U}(k)
 	+ \b{U}^\top(k)\b{\Upsilon}_\s^\top\b{\Gamma}_\s\b{x}(k)
-	+ \b{U}^\top(k)\b{\Upsilon}_\s^\top\b{\Upsilon}_\s\b{U}(k)\\
+	+ \b{U}^\top(k)\b{\Upsilon}_\s^\top\b{\Upsilon}_\s\b{U}(k) \nonumber \\
 	&= [\begin{array}{cc}
 		1 & \b{U}^\top(k)
 	\end{array}] \underbrace{ \left[\begin{array}{cc}
 		\b{x}^\top(k) \b{\Gamma}_\s^\top\b{\Gamma}_\s \b{x}(k) & \b{x}^\top(k)\b{\Gamma}_\s^\top\b{\Upsilon}_\s \\
 		\b{\Upsilon}_\s^\top\b{\Gamma}_\s\b{x}(k) & \b{\Upsilon}_\s^\top\b{\Upsilon}_\s
-	\end{array}\right] }_{\b{W}} \left[\begin{array}{c}
+	\end{array}\right] }_{\b{W}(k)} \left[\begin{array}{c}
 		1 \\
 		\b{U}(k)
 	\end{array}\right]
@@ -109,171 +71,209 @@ Stator flux:
 %	\end{array}\right],
 %\end{align*}
 %where the squared-operation is an element-wise operation.
-Torque:
+and the one of the torque is
 \begin{align}
 	T(k+l) &= \Tfac\b{\psi}_r^\top(k+l)\b{\Xi}\b{\psi}_s(k+l)
-	= \Tfac\left(\b{\Gamma}_r\b{x}(k) + \b{\Upsilon}_r\b{U}(k)\right)^\top \b{\Xi} \left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right) \\
+	= \Tfac\left(\b{\Gamma}_r\b{x}(k) + \b{\Upsilon}_r\b{U}(k)\right)^\top \b{\Xi} \left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right) \nonumber \\
 	&= \Tfac\left(\b{x}^\top(k)\b{\Gamma}_r^\top \b{\Xi} \b{\Gamma}_r \b{x}(k)
 	+ \b{x}^\top(k)\b{\Gamma}_r^\top \b{\Xi} \b{\Upsilon}_\s\b{U}(k)
 	+ \b{U}^\top(k)\b{\Upsilon}_r^\top \b{\Xi} \b{\Gamma}_\s\b{x}(k)
-	+ \b{U}^\top(k)\b{\Upsilon}_r^\top \b{\Xi} \b{\Upsilon}_\s\b{U}(k)\right) \\
+	+ \b{U}^\top(k)\b{\Upsilon}_r^\top \b{\Xi} \b{\Upsilon}_\s\b{U}(k)\right) \nonumber \\
 	&= \Tfac[\begin{array}{cc}
 		1 & \b{U}^\top(k)
 	\end{array}] \underbrace{ \left[\begin{array}{cc}
 		\b{x}^\top(k) \b{\Gamma}_r^\top \b{\Xi}\b{\Gamma}_\s \b{x}(k) & \b{x}^\top(k)\b{\Gamma}_r^\top \b{\Xi} \b{\Upsilon}_\s \\
 		\b{\Upsilon}_r^\top \b{\Xi} \b{\Gamma}_\s\b{x}(k) & \b{\Upsilon}_r^\top \b{\Xi} \b{\Upsilon}_\s
-	\end{array}\right] }_{\b{Q}} \left[\begin{array}{c}
+	\end{array}\right] }_{\b{Q}(k)} \left[\begin{array}{c}
 		1 \\
 		\b{U}(k)
-	\end{array}\right]
+	\end{array}\right].
 \end{align}
-%\begin{align*}
-%	\b{T}(k) &= \left[\begin{array}{c}
-%		T(k+1) \\
-%		T(k+2) \\
-%		\vdots \\
-%		T(k+N+1)
-%	\end{array}\right]
-%	= \Tfac\left[\begin{array}{c}
-%		\b{\psi}_r(k+1)\Xi\b{\psi}_s(k+1) \\
-%		\b{\psi}_r(k+2)\Xi\b{\psi}_s(k+2) \\
-%		\vdots \\
-%		\b{\psi}_r(k+N+1)\Xi\b{\psi}_s(k+N+1)
-%	\end{array}\right] \\
-%	&= \Tfac\b{\psi}_r(k) \left[\begin{array}{ccc}
-%		\Xi & & \\
-%		& \ddots & \\
-%		& & \Xi
-%	\end{array}\right]\b{\psi}_s(k) := \Tfac\b{\psi}_r(k) \Xi \b{\psi}_s(k)
-%\end{align*}
-The switching penalty is a term that depends on each phase at each time step. Thus, the switching transition $\Delta\b{u}(k)$ cannot be calculated in closed form, but has to be split up into each phase. The term $\Delta \b{u}(k)$ additionally depends on the previous input, which necessitates the usage of the constant term. Next, the polynomial decomposition for two ($\A$, $\B$) of three phases at time step $k$ are are shown.
-\begin{align}
+To obtain a polynomial representation of the switching penalty, it has to be separated into each phase and time step. %Thus, the switching transition $\Delta\b{u}(k)$ cannot be calculated in closed form, but has to be split up into each phase. 
+The term $\Delta \b{u}(k)$ additionally depends on the previous input, which necessitates the usage of the constant term. Next, the polynomial decomposition for two ($\A$, $\B$) of three phases ($\A$, $\B$, $\C$) at time step $k$ are are shown.
+\begin{align}\label{eq:12}
 	\Delta u_\A(k) &= u_\A(k) - u_\A(k-1) \\
-	&= [\begin{array}{cccccc}
-		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
+	&= [\begin{array}{cc}
+		1 & \b{U}^\top(k)
 	\end{array}]
 	\underbrace{ \left[\begin{array}{ccc}
-		-\b{u}_\A(k-1) & 1 & \0 \\
-		& \0 & 
-	\end{array}\right] }_{\b{Z}_{a,0}}
+		-u_\A(k-1) & 1 & \0_{1\times 3N-1} \\
+		& \0_{3N+1\times3N} & 
+	\end{array}\right] }_{\b{Z}_{\A,0}(k)}
 	\left[\begin{array}{c}
 		1 \\
-		\b{u}_\A(k)\\
-		\b{u}_\B(k)\\
-		\b{u}_\C(k)\\
-		\vdots\\
-		\b{u}_\C(k+N-1)
-	\end{array}\right]
+		\b{U}(k)
+	\end{array}\right] \nonumber
 \end{align}
 \begin{align}
 	\Delta u_\B(k) &= u_\B(k) - u_\B(k-1) \\
-	&= [\begin{array}{cccccc}
-		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
+	&= [\begin{array}{cc}
+		1 & \b{U}^\top(k)
 	\end{array}]
-	\left[\begin{array}{cccc}
-		-\b{u}_\B(k-1) & 0 & 1 & \0 \\
-		& \0 &  & 
-	\end{array}\right]
+	\underbrace{\left[\begin{array}{cccc}
+		-u_\B(k-1) & 0 & 1 & \0_{1\times3N-2} \\
+		& & \0_{3N+1\times3N} & 
+	\end{array}\right]}_{\b{Z}_{\B,0}(k)}
 	\left[\begin{array}{c}
-		1 \\
-		\b{u}_\A(k)\\
-		\b{u}_\B(k)\\
-		\b{u}_\C(k)\\
-		\vdots\\
-		\b{u}_\C(k+N-1)
-	\end{array}\right]
+	1 \\
+	\b{U}(k)
+	\end{array}\right] \nonumber
 \end{align}
 The computation of all other switching transitions depend on the Inputs $\b{U}(k)$ so that the polynomial presentation can be generalized to 
 \begin{align}
-	\Delta u_\A(k) &= u_\A(k) - u_\A(k-1) \\
-	&= [\begin{array}{cccccc}
-		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
+	\Delta u_\A(k+l) &= u_\A(k+l) - u_\A(k+l-1) \\
+	&= [\begin{array}{cc}
+		1 & \b{U}^\top(k)
 	\end{array}]
-	\left[\begin{array}{cccc}
-		0 & \0_{1\times3l} & -1 & \0 \\
-		& \0 & &
-	\end{array}\right]
+	\underbrace{\left[\begin{array}{cccc}
+		0 & \0_{1\times3l} & -1 & \0_{1\times3N-1-3l} \\
+		& & \0_{3N+1\times3N} &
+	\end{array}\right]}_{\b{Z}_{\A,l}(k)}
 	\left[\begin{array}{c}
-		1 \\
-		\b{u}_\A(k)\\
-		\b{u}_\B(k)\\
-		\b{u}_\C(k)\\
-		\vdots\\
-		\b{u}_\C(k+N-1)
-	\end{array}\right]
+	1 \\
+	\b{U}(k)
+	\end{array}\right] \nonumber
 \end{align}
 for the a-phase and
 \begin{align}\label{eq:4}
-	\Delta u_\B(k) &= u_\B(k+l) - u_\B(k+l-1) \\
-	&= [\begin{array}{cccccc}
-		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
+	\Delta u_\B(k+l) &= u_\B(k+l) - u_\B(k+l-1) \\
+	&= [\begin{array}{cc}
+		1 & \b{U}^\top(k)
 	\end{array}]
-	\left[\begin{array}{cccc}
-		0 & \0_{1\times(3l+1)} & 1 & \0 \\
-		& \0 &  & 
-	\end{array}\right]
+	\underbrace{\left[\begin{array}{cccc}
+		0 & \0_{1\times(3l+1)} & 1 & \0_{1\times3N-2-3l} \\
+		& & \0_{3N+1\times3N}  & 
+	\end{array}\right]}_{\b{Z}_{\B,l}(k)}
 	\left[\begin{array}{c}
-		1 \\
-		\b{u}_\A(k)\\
-		\b{u}_\B(k)\\
-		\b{u}_\C(k)\\
-		\vdots\\
-		\b{u}_\C(k+N-1)
-	\end{array}\right]
+	1 \\
+	\b{U}(k)
+	\end{array}\right] \nonumber
+%	\left[\begin{array}{c}
+%		1 \\
+%		\b{u}_\A(k)\\
+%		\b{u}_\B(k)\\
+%		\b{u}_\C(k)\\
+%		\vdots\\
+%		\b{u}_\C(k+N-1)
+%	\end{array}\right] \nonumber
 \end{align}
 for the b-phase, where $l \in \{1,\ 2, \ldots,\ N-1\}$.
 
-\subsection{Final cost formulation}
-The full horizon cost stated in \eqref{eq:2} is non-convex because of the torque- and absolute stator flux tracking terms. Using the definitions \eqref{eq:3} to \eqref{eq:4}, we get
+Note that all matrices $\b{W}(k)$, $\b{Q}(k)$, and $\b{Z}_{z,l}(k)$ are dependent on either the current state or previous input. Thus, they are recomputed at every time step $k$.
+
+Further, note that is is possible to add additional constraints to this system. For instance, the implementation of a linear switching constraint \cite[\S~2]{gey_book} can easily be performed. When using switching constraints the set of possible switching transitions simplifies to $\Delta\b{u}(k)\in\{-1,\ 0,\ 1\}^3$, so that the $\ell2$-norm and $\ell1$-norm are equivalent. Exploiting this fact enables us to reformulate \eqref{eq:12} to \eqref{eq:4} to a single matrix representation as in \cite[\S5.6]{gey_book}. For the sake of simplicity and to keep a general representation, we do not consider such constraints nor simplifications in this report.
+
+
+\subsection{Cost reformulation}
+The full horizon cost stated in \eqref{eq:2} is non-convex because of the torque- and stator flux magnitude tracking terms. Using the definitions \eqref{eq:3} to \eqref{eq:4}, we get
 \begin{align}
-	J_N(k) &= \lambda_T \sum_{l = k}^{k+N-1} \left|\left|T^*(l+1)-\Tfac [1\ \b{U}^\top(k)]\b{Q}\left[\begin{array}{c}
+	J_N(\b{U}(k)) &= \lambda_T \sum_{l = k}^{k+N-1} \left|\left|T^*(l+1)-\Tfac [1\ \b{U}^\top(k)]\b{Q}(k)\left[\begin{array}{c}
 		1\\
 		\b{U}(k)
 	\end{array}\right]\right|\right|_2^2 \\
-	&\ + (1-\lambda_T) \sum_{l = k}^{k+N-1} \left|\left|(\Psi_s^*(l+1))^2-[1\ \b{U}^\top(k)]\b{W}\left[\begin{array}{c}
+	&\ + (1-\lambda_T) \sum_{l = k}^{k+N-1} \left|\left|(\Psi_s^*(l+1))^2-[1\ \b{U}^\top(k)]\b{W}(k)\left[\begin{array}{c}
 		1\\
 		\b{U}(k)
 	\end{array}\right]\right|\right|_2^2 \nonumber \\
-	&\ + \lambda_u \sum_{l \in \{k,\ldots,k+N-1\}, z \in \{\A,\B,\C\}}^{k+N-1} \left|[1\ \b{U}^\top(k)]\b{Z}_{z,l}\left[\begin{array}{c}
+	&\ + \lambda_u \sum_{l \in \{k,\ldots,k+N-1\}, z \in \{\A,\B,\C\}} \left|\left|[1\ \b{U}^\top(k)]\b{Z}_{z,l}(k)\left[\begin{array}{c}
 		1\\
 		\b{U}(k)
-	\end{array}\right]\right|. \nonumber
+	\end{array}\right]\right|\right|_1. \nonumber
 \end{align}
 Using the identity
 \begin{equation*}
 	\b{v}^\top \b{Q} \b{v} = \mathrm{trace} \left( \b{Qvv}^\top \right),
 \end{equation*}
 we get
-\begin{align*}
-	J_N(k) &= \lambda_T \sum_{l = k}^{k+N-1} \left|\left|T^*(l+1)-\Tfac \mathrm{trace} \left(\b{QX}\right) \right|\right|_2^2 \\
-	&\ + (1-\lambda_T) \sum_{l = k}^{k+N-1} \left|\left|(\Psi_s^*(l+1))^2-\mathrm{trace} \left(\b{WX}\right)\right|\right|_2^2 \nonumber \\
-	&\ + \lambda_u \sum_{l \in \{k,\ldots,k+N-1\}, z \in \{\A,\B,\C\}}^{k+N-1} \left| \mathrm{trace} \left( \b{Z}_{z,l}\b{X} \right) \right|, \nonumber
-\end{align*}
+\begin{align}\label{eq:7}
+	J_N(\b{\Theta}(k)) &= \lambda_T \sum_{l = k}^{k+N-1} \left|\left|T^*(l+1)-\Tfac \mathrm{trace} \left(\b{Q}(k)\b{\Theta}(k)\right) \right|\right|_2^2 \\
+	&\ + (1-\lambda_T) \sum_{l = k}^{k+N-1} \left|\left|(\Psi_s^*(l+1))^2-\mathrm{trace} \left(\b{W}(k)\b{\Theta}(k)\right)\right|\right|_2^2 \nonumber \\
+	&\ + \lambda_u \sum_{l \in \{k,\ldots,k+N-1\}, z \in \{\A,\B,\C\}} \left|\left| \mathrm{trace} \left( \b{Z}_{z,l}(k)\b{\Theta}(k) \right) \right|\right|_1, \nonumber
+\end{align}
 where
-\begin{equation}
-	\b{X} = \left[\begin{array}{c}
+\begin{equation}\label{eq:8}
+	\b{\Theta}(k) = \left[\begin{array}{c}
 		1\\
 		\b{U}(k)
 	\end{array}\right] [1\ \b{U}^\top(k)].
 \end{equation}
-This cost formulation can later be used for the SDP relaxation.
+This cost formulation can now be used for defining the SDP relaxation.
+
+
+\section{SDP relaxation for solution approximation}\label{sec:3}
+We have used full-horizon variables to redefine the cost function $J_N(\b{\Theta}(k))$ in \eqref{eq:7}. The original cost $J_N(\b{U}(k))$ of \eqref{eq:2} and the new cost function are equivalent, given \eqref{eq:8}. The new polynomial representation of the cost function $J_N(\b{\Theta}(k))$ can now be used for an SDP relaxation to get an approximation of $J_N(\b{U}(k))$. The optimization problem \eqref{eq:5} can be written as
 \begin{align*}
-	\b{U}_\augp^\opt(k) = \ &\argmin_{\b{U}_\augp(k)} J_N(k) \\
+	\b{\Theta}(k)^\opt(k) = \ &\argmin_{\b{\Theta}(k)} J_N(\b{\Theta}(k)) \\
 	&\begin{array}{llr}
-		\mathrm{s.t.} & \b{x}_\augp(l+1) = \b{A}_\augp\b{x}_\augp(l) + \b{B}_\augp\b{u}_\augp(l) + \b{D}_\augp\b{v}_g(l), & \forall l\in\{k, \ldots,\ k + N_\p-1\}\sp \\
-		& \b{y}_\augp(l+1) = \b{C}_\augp \b{x}_\augp(l+1), & \forall l\in\{k, \ldots,\ k + N_\p - 1\}\sp \\
-		& \b{u}_\ph(l) \in \{-1,\ 0,\ 1\}^{3}, &\forall l\in\{k, \ldots,\ k+N_\p - 1\}\sp \\
-		& \b{p}(l) = | \Delta \b{u}_\ph(l) |, & \forall l\in\{k, \ldots,\ k + N_\p-1\}.
+		\mathrm{s.t.} & \b{\Theta}(k) = \left[\begin{array}{c}
+			1\\
+			\b{U}(k)
+		\end{array}\right] [1\ \b{U}^\top(k)] \\
+		& \b{U} \in \{-1,\ 0,\ 1\}^{3N}. \\
 	\end{array} \nonumber
 \end{align*}
-
-\subsection{SDP formulation}
-We will now use the new cost term to formulate the optimization problem
-
+To avoid an integer optimization, we relax the integer constraint such that we obtain the new optimization problem
+\begin{align*}
+	\b{\Theta}^\opt(k) = \ &\argmin_{\b{\Theta}(k)} J_N(\b{\Theta}(k)) \\
+	&\begin{array}{llr}
+		\mathrm{s.t.} & \b{\Theta}(k) = \left[\begin{array}{c}
+			1\\
+			\b{U}(k)
+		\end{array}\right] [1\ \b{U}^\top(k)] \\
+		& \b{U} \in [-1,\ 1]^{3N}, \\
+	\end{array} \nonumber
+\end{align*}
+which is equivalent to
+\begin{align*}
+	\b{\Theta}^\opt(k) = \ &\argmin_{\b{\Theta}(k)} J_N(\b{\Theta}(k)) \\
+	&\begin{array}{llr}
+		\mathrm{s.t.} & \b{\Theta}(k) \succeq 0 \\
+		& \mathrm{rank}(\b{\Theta}(k)) = 1 \\
+		& \Theta_{1,1}(k) = 1\\
+		& \b{\Theta}(k) \in [-1,\ 1]^{3N+1\times3N+1} \\
+		& \mathrm{diag}(\b{\Theta}(k)) \in [0,\ 1]^{3N+1}. \\
+	\end{array} \nonumber
+\end{align*}
+Using $\b{\Theta}(k)$ in the cost term makes it linear, as all non-linear monomials are represented by a new matrix-variable. Therefore, the cost-function is convex. The positive definiteness, and box constraints on the values of $\b{\Theta}(k)$ are convex as well. The equality constraint on the first element $\Theta_{(1,1)}$ is affine. All non-convexity is contained in the non-linear rank-constraint on the variable $\b{\Theta}(k)$. In a next step we perform the SDP relaxation by dropping the rank constraint to obtain the following convex optimization problem:
+\begin{align}\label{eq:9}
+	\b{\Theta}^\opt(k) = \ &\argmin_{\b{\Theta}(k)} J_N(\b{\Theta}(k)) \\
+	&\begin{array}{llr}
+		\mathrm{s.t.} & \b{\Theta}(k) \succeq 0 \\
+		& \Theta_{1,1}(k) = 1\\
+		& \b{\Theta}(k) \in [-1,\ 1]^{3N+1\times3N+1} \\
+		& \mathrm{diag}(\b{\Theta}(k)) \in [0,\ 1]^{3N+1}. \\
+	\end{array} \nonumber
+\end{align}
+We can apply a simple continuous-domain solver to the optimization problem \eqref{eq:9}, e.g. a gradient descent. We reconstruct a one-dimensional array to obtain a solution to our original problem. There are the following possibilities:
+\begin{enumerate}
+	\item \textit{First column} takes the first column of $\b{\Theta}(k)$ and rounds it to get a solution estimate of the input, i.e., 
+	\begin{equation*}
+		\b{U}_{\mathrm{col}} = \mathrm{round}\left(\b{\Theta}_{2:,1}(k)\right).
+	\end{equation*}
+	\item \textit{Diagonal} takes the square-root of the diagonal, multiplies each entry by the sign of the first column, and rounds it to get a solution estimate, i.e., 
+	\begin{equation*}
+		\b{U}_{\mathrm{diag}} = \mathrm{round}\left(\mathrm{sign}(\b{\Theta}_{2:,1}(k))^\top\sqrt{\mathrm{diag}(\b{\Theta}_{2:,2:}(k))}\right).
+	\end{equation*}
+	\item \textit{Eigen vector} takes the eigen vector with the largest eigenvalue and rounds it to get a solution estimate, i.e., 
+	\begin{equation*}
+		\b{U}_{\mathrm{vec}} = \mathrm{round}\left(\sqrt{\lambda_1}\b{v}_1\right),
+	\end{equation*}
+	 where $\lambda_1$ is the largest eigenvalue of $\b{\Theta}(k)$ and $\b{v}_1$ the corresponding eigen vector.
+\end{enumerate}
+The applicability and performance of these possibilities is further discussed in Chapter \ref{Chapter__Numerical_Case_Studies}.
 
 
 
 \section{Algorithms}
+The above-mentioned SDP relaxations can be used in various ways to speed-up the torque tracking controller. We will focus on computing the SDP relaxation once a controller sample. The following algorithms will be discussed:
+\begin{enumerate}
+	\item FCS-MPC with SDP guess (\textit{\Edsdp}) is a branch-and-bound algorithm with an upper limit of \nodelim parent nodes. But it starts with the best of the educated guess and the SDP guess.
+	\item FCS-MPC with parallel SDP (\textit{\Edplus}) is a branch-and-bound algorithm that uses an educated guess, with an upper limit of \nodelim parent nodes. Additionally, an SDP guess is computed in parallel. In the final step, the best of the two is chosen.
+\end{enumerate}
+To benchmark improvements, we introduce the conventional FSC-MPC; \textit{\Ed} is a branch-and-bound algorithm that starts with an educated guess, with an upper limit of \nodelim parent nodes.
 
+Additionally, we introduce the \textit{\Opt} algorithm. It represents the best-possible choice an algorithm with horizon $N$ could take. It uses a branch-and-bound algorithm with no node limit. Thus, running it until the end gives an optimality guarantee on the solution (Section \ref{sec:4}).
 
+Note that there is also the possibility to use multiple SDPs within one controller sample. For instance, we could improve branch-and-bound  by giving a lower bound on the future branch cost, which would closer relate to the speed-up of \cite[\S3.3]{NL-SDA}. In this report, such a method will not be discussed. The reason is that it is difficult to estimate the computational trade-off between solving an SDP relaxation and traversing the nodes. Getting a better intuition about the embedded computational complexity trade off between visited nodes and executed gradient descent iterations could be part of future work.
+%Additionally, there is less possibility for parallelization compared to e.g. \Edplus. Let us assume that an SDP would be executed only in the root-note. In the worst case it will be used 27 times, which would lead to many more gradient descent iterations in addition to the normal branch-and-bound execution. 
 

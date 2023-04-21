@@ -1,19 +1,19 @@
 
-\chapter{Numerical Case Studies}
+\chapter{Numerical Case Studies}\label{Chapter__Numerical_Case_Studies}
 
 \section{Performance metrics}\label{sec:2}
-The goal of this work is to show the applicability of FCS-MPC for torque tracking in a real world setting. Performance metrics give us an understanding about the tracking and time performance that the proposed algorithms have. We investigate FCS-MPC for torque and absolute stator flux tracking. The tracking performance can be quantified by the root-mean squared (rms) error. That is
+The goal of this work is to show the applicability of FCS-MPC for torque tracking in a real world setting. Performance metrics give us an understanding about the tracking and time performance that the proposed algorithms have. We investigate FCS-MPC for torque and stator flux magnitude tracking. The tracking performance can be quantified by the root-mean squared (rms) error. That is
 \begin{equation*}
-	e_T(k) = ||T^*(k) - T(k)||_2^2
+	e_\T(k) = ||T^*(k) - T(k)||_2^2
 \end{equation*}
 for the torque $T(k)$ and 
 \begin{equation*}
 	e_\Psi(k) = ||\Psi^*(k) - \Psi(k)||_2^2
 \end{equation*}
-for the absolute stator flux $\Psi(k)$, where $T^*(k)$ and $\Psi^*(k)$ are the torque and absolute stator flux reference, respectively.
+for the stator flux magnitude $\Psi(k)$, where $T^*(k)$ and $\Psi^*(k)$ are the torque and stator flux magnitude reference, respectively. 
 In addition we measure the cost accumulated by the controller. It is defined as
 \begin{equation*}
-	J_{acc}(k) = \sum_{l = 0}^{k} J(k).
+	J_{\mathrm{acc}}(k) = \sum_{l = 0}^{k} J(k).
 \end{equation*}
 The accumulated cost is a simple way of comparing different controller performances. It will later be used to show how different controllers perform in certain operational points, such as torque steps.
 
@@ -23,20 +23,20 @@ Besides the tracking performance of the controllers, the computational time play
 
 
 \section{Parameter choices and simulation setting}
-There are view hyper parameters that have to be chosen for the controller. The cost function contains the torque weighting factor $\lambda_T$, which discounts the torque ripple to prioritize the flux magnitude ripple, without changing the cost ratio between these two terms and the switching penalty. % Maybe put this sentence to the introduction of the cost function ...
-We use the same parameter choice $\lambda_T = 0.052$. In addition we have to decide about the switching penalty $\lambda_u$. It is chosen to $\lambda_u = 3.5\times10^{-3}$ to achieve a switching frequency of approximately $f_\sw = \SI{215}{\hertz}$. The sampling intervals of all controllers are chosen to $T_\s = \SI{100}{\micro\second}$ and the horizons are $N = 5$. 
-Additionally, in the case of a parent node limit we use $n_{p,max} = 250$, unless stated otherwise. Table \ref{tab:2} contains a list of all controller parameters.
+There are view hyper parameters that have to be chosen for the controller. The cost function contains the torque weighting factor $\lambda_\T$, which discounts the torque ripple to prioritize the flux magnitude ripple, without changing the cost ratio between these two terms and the switching penalty. % Maybe put this sentence to the introduction of the cost function ...
+We use the same parameter choice $\lambda_\T = 0.052$. In addition we have to decide about the switching penalty $\lambda_\U$. It is chosen to $\lambda_u = 3.5\times10^{-3}$ to achieve a switching frequency of approximately $f_\sw = \SI{215}{\hertz}$. The sampling intervals of all controllers are chosen to $T_\s = \SI{100}{\micro\second}$ and the horizons are $N = 5$. 
+Additionally, in the case of a parent node limit we use $n_{\p,\max} = \nodelim$, unless stated otherwise. Table \ref{tab:2} contains a list of all controller parameters.
 \begin{table}[h!]
 	\centering
 	\begin{tabular}{ccc}
 		\toprule
 		parameter name & parameter symbol & parameter values \\
 		\midrule[\heavyrulewidth]
-		torque weighting factor & $\lambda_T$ & $0.052$ \\
+		torque weighting factor & $\lambda_\T$ & $0.052$ \\
 		switching weight & $\lambda_\U$ & $3.5\times10^{-3}$\\
 		sampling interval & $T_\s$ & $\SI{100}{\micro\second}$\\
 		horizon & $N$ & $5$\\
-		upper bound on parent nodes & $n_{p,max}$ & $250$\\
+		upper bound on parent nodes & $n_{\p,\max}$ & $\nodelim$\\
 		simulation sampling interval & $T_\Sim$ & $\SI{.5}{\micro\second}$ \\
 		\bottomrule
 	\end{tabular}
@@ -44,7 +44,7 @@ Additionally, in the case of a parent node limit we use $n_{p,max} = 250$, unles
 	\label{tab:2}
 \end{table}
 
-Our comparisons are based on a simulation of a scenario with a ramp-up, step-down, and step-up of the torque. The absolute stator flux reference will be kept at a constant level $\Psi^* = 1$. Figure \ref{fig:9} shows the torque reference.
+Our comparisons are based on a simulation of a scenario with a ramp-up, step-down, and step-up of the torque. The stator flux magnitude reference will be kept at a constant level $\Psi^* = 1$. Figure \ref{fig:9} shows the torque reference.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=.7\textwidth]{Images/Fig9}
@@ -52,8 +52,7 @@ Our comparisons are based on a simulation of a scenario with a ramp-up, step-dow
 	\label{fig:9}
 \end{figure}
 
-The simulation and FCS-MPC run at different speeds. Throughout all scenarios a simulation sampling interval of $T_\Sim = \SI{0.5}{\micro\second}$ is used. The
-rotor has a fundamental frequency of $f_1 = \SI{1494}{\rpm} = \SI{24.9}{\hertz}$. The rotor and stator flux measurements are perturbed by $\eta \sim \mathcal{U}(-2.5 \times 10^{-3},\ 2.5 \times 10^{-3})$, where $\mathcal{U}(a,\ b)$ is the uniform distribution in the interval $[a,\ b]$. All machine parameters are stated in Table \ref{tab:4}.
+The simulation and FCS-MPC run at different sampling rates. Throughout all scenarios a simulation sampling interval of $T_\Sim = \SI{0.5}{\micro\second}$ is used. The rotor and stator flux measurements are perturbed by $\eta \sim \mathcal{U}(-2.5 \times 10^{-3},\ 2.5 \times 10^{-3})$, where $\mathcal{U}(a,\ b)$ is the uniform distribution in the interval $[a,\ b]$. All machine parameters are stated in Table \ref{tab:4} and taken from \cite{kar_2020}.
 \clearpage
 \begin{table}[h!]
 	\centering
@@ -61,22 +60,21 @@ rotor has a fundamental frequency of $f_1 = \SI{1494}{\rpm} = \SI{24.9}{\hertz}$
 		\toprule
 		parameter name & parameter value \\
 		\midrule[\heavyrulewidth]
-		Voltage & $\SI{3300}{\volt}$ \\
-		Current & $\SI{356}{\ampere}$ \\
-		Real power & $\SI{1.587}{\mega\watt}$ \\
-		Apparent power & $\SI{2.035}{\mega\volt\ampere}$ \\
-		Stator frequency & $\SI{50}{\hertz}$ \\
-		Rotational speed & $\SI{1494}{\rpm}$ \\
+		Voltage & $\SI{400}{\volt}$ \\
+		Current & $\SI{4.4}{\ampere}$ \\
+		Real power & $\SI{2.4079}{\kilo\watt}$ \\
+		Apparent power & $\SI{3.048}{\kilo\volt\ampere}$ \\
+%		Stator frequency & $\SI{50}{\hertz}$ \\
+		Rotational speed & $\SI{2875}{\rpm}$ \\
 		\midrule
-		Stator resistance & $R_s = \SI{.0108}{\pu}$ \\
-		Rotor resistance & $R_r = \SI{.0091}{\pu}$ \\
-		Stator leak. react. & $X_{ls} = \SI{.1493}{\pu}$ \\
-		Rotor leak. react. & $X_{lr} = \SI{.1104}{\pu}$ \\
-		Main reactance & $X_m = \SI{2.349}{\pu}$ \\
-		Total leak. react. & $X_\sigma = \SI{.2548}{\pu}$ \\
+		Stator resistance & $R_s = \SI{.0514}{\pu}$ \\
+		Rotor resistance & $R_r = \SI{.0457}{\pu}$ \\
+		Stator leak. react. & $X_{ls} = \SI{.0591}{\pu}$ \\
+		Rotor leak. react. & $X_{lr} = \SI{.0705}{\pu}$ \\
+		Main reactance & $X_m = \SI{2.3625}{\pu}$ \\
+		Number of Poles & $p = 1$ \\
 		\midrule
-		dc-link voltage & $V_{dc} = \SI{1.930}{\pu}$ \\
-		dc-link capacitance &  $X_c \SI{11.769}{\pu}$ \\
+		dc-link voltage & $V_{dc} = \SI{1.9902}{\pu}$ \\
 		\bottomrule
 	\end{tabular}
 	\caption{Machine parameters.}
@@ -85,7 +83,7 @@ rotor has a fundamental frequency of $f_1 = \SI{1494}{\rpm} = \SI{24.9}{\hertz}$
 
 
 \section{Advantages of multi-step control}
-The problem of long solving times of the branch-and-bound algorithm is strongly coupled with the length of the control horizon $N$. To show that a longer horizon leads to a better performance, we ran simulations with $N\in\{1,3,5\}$ and checked its influence on the rms tracking errors of the torque and absolute stator flux. All values are listed in Table \ref{tab:3}.
+The problem of long solving times of the branch-and-bound algorithm is strongly coupled with the length of the control horizon $N$. To show that a longer horizon leads to a better performance, we ran simulations with $N\in\{1,3,5\}$ and checked its influence on the rms tracking errors of the torque and stator flux magnitude. All values are listed in Table \ref{tab:3}.
 \begin{table}[h!]
 	\centering
 	\begin{tabular}{cccc}
@@ -101,7 +99,7 @@ The problem of long solving times of the branch-and-bound algorithm is strongly 
 	\label{tab:3}
 \end{table} 
 
-It becomes clear that increasing the horizon leads to improved tracking. Comparing $N=1$ and $N=3$ shows that there can also be trade offs between torque and absolute stator flux tracking. Nevertheless, choosing $N=5$ leads to superior tracking for both quantities. Choosing a longer horizon can lead to even better tracking. We will stick to $N=5$, as is shows clear improvements and still leads to reasonable simulation times.
+It becomes clear that increasing the horizon leads to improved tracking. Comparing $N=1$ and $N=3$ shows that there can also be trade offs between torque and stator flux magnitude tracking. Nevertheless, choosing $N=5$ leads to superior tracking for both quantities. Choosing a longer horizon can lead to even better tracking. We will stick to $N=5$, as is shows clear improvements and still leads to reasonable simulation times.
 
 
 \section{Computational feasibility}
@@ -117,9 +115,9 @@ In \cite{NL-SDA} the branch-and-bound algorithm was applied to a non-linear func
 	\label{fig:0}
 \end{figure}
 
-Figure \ref{fig:0} depicts the number of traversed nodes for a simulation with a conventional branch-and-bound algorithm. The educated guess is used as an initial solution and there is no limit on the number of parent nodes that are traversed. The torque reference is shown to give an intuition about the current operational condition of the controller. We can observe a high peak during the torque step-up. In this case the number of traversed parent nodes reaches up to $n_p = 4297$. When excluding all time steps with $n_p \geq 250$ we can calculate an average of $\bar{n}_p \approx 19.4$ with a standard deviation of $\mathrm{std}(n_p) \approx 18.2$. This simulation shows the central problem of the convectional branch-and-bound algorithm: The number of parent nodes $n_p$ tends to explode in some operational conditions.
+Figure \ref{fig:0} depicts the number of traversed nodes for a simulation with a conventional branch-and-bound algorithm. The educated guess is used as an initial solution and there is no limit on the number of parent nodes that are traversed. The torque reference is shown to give an intuition about the current operational condition of the controller. We can observe a high peak during the torque step-up. In this case the number of traversed parent nodes reaches up to $n_p = 4297$. When excluding all time steps with $n_p \geq \nodelim$ we can calculate an average of $\bar{n}_p \approx 19.4$ with a standard deviation of $\mathrm{std}(n_p) \approx 18.2$. This simulation shows the central problem of the convectional branch-and-bound algorithm: The number of parent nodes $n_p$ tends to explode in some operational conditions.
 
-In \cite{gey_book} and \cite{dorf_2019} different methods for initializing the branch-and-bound algorithm were discussed. We will compare three different initial solutions to obtain an intuition about the relevance of a good initialization.
+In \cite[\S5]{gey_book} and \cite{dorf_2019} different methods for initializing the branch-and-bound algorithm were discussed. We will compare three different initial solutions to obtain an intuition about the relevance of a good initialization.
 \begin{enumerate}
 	\item \textit{Bad guess} is a vector of zeros. It represents a bad initial solution.
 	\item \textit{Ed guess} is the educated guess.
@@ -140,14 +138,14 @@ In \cite{gey_book} and \cite{dorf_2019} different methods for initializing the b
 	\label{tab:1}
 \end{table}
 %FIG1: number of Parent nodes traversed, 
-%TAB0: mean and std outside of step-operation. Removed all samples with more than 250 visited parent nodes (maybe find a better metric?) ...
+%TAB0: mean and std outside of step-operation. Removed all samples with more than \nodelim visited parent nodes (maybe find a better metric?) ...
 %Additionally, max nodes observed
 %Bad guess & $218.4$ & $149.2$ & $6948$ \\
 %Ed guess & $19.4$ & $18.2$ & $4318$ \\
 %Opt guess & $16.6$ & $11.8$ & $914$ \\
 
-Table \ref{tab:1} shows the mean, standard deviation, and maximum value of a separate steady-state simulation. Ed guess and opt guess always stay below 250 parent nodes with a simulated maximum of 100 and 65 parent nodes, respectively. The bad guess continuously traverses the highest number of parent nodes. Its maximum number of nodes is $n_{p,bad\ guess} = 497$ parent nodes.
-This shows that having a good initial guess is important during steady-state to keep the solving time small. The ed guess is a good enough estimate, as the number of nodes is still far below our maximum bound of 250 nodes.
+Table \ref{tab:1} shows the mean, standard deviation, and maximum value of a separate steady-state simulation. Ed guess and opt guess always stay below \nodelim parent nodes with a simulated maximum of 100 and 65 parent nodes, respectively. The bad guess continuously traverses the highest number of parent nodes. Its maximum number of nodes is $n_{p,bad\ guess} = 497$ parent nodes.
+This shows that having a good initial guess is important during steady-state to keep the solving time small. The ed guess is a good enough estimate, as the number of nodes is still far below our maximum bound of \nodelim nodes.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=.7\textwidth]{Images/Fig1}
@@ -159,27 +157,21 @@ In contrast to steady-state operation, we observe a high peak in the number of n
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=.7\textwidth]{Images/Fig3}
-	\caption{Torque of systems controlled by controllers with an educated guess as initial solution. \textit{No node limit} has no node limit and \textit{Node limit} has a node limit of 250 nodes.}
+	\caption{Torque of systems controlled by controllers with an educated guess as initial solution. \textit{No node limit} has no node limit and \textit{Node limit} has a node limit of \nodelim nodes.}
 	\label{fig:3}
 \end{figure}
 
-Figure \ref{fig:3} shows the torque tracking of the two controllers. Both are initialized with an educated guess and execute two branch-and-bound algorithms. The first controller is executed without an upper node limit to give an optimal benchmark. The second controller is executed with a node limit of 250 parent nodes. We can observe that both controllers behave very similarly until the torque step-up. During the step-up the controller with an upper node limit performs much worse than the benchmark. This shows that cutting the branch-and-bound algorithm due to time constraints can lead to suboptimality and deteriorate the controller's performance.
+Figure \ref{fig:3} shows the torque tracking of the two controllers. Both are initialized with an educated guess and execute two branch-and-bound algorithms. The first controller is executed without an upper node limit to give an optimal benchmark. The second controller is executed with a node limit of \nodelim parent nodes. We can observe that both controllers behave very similarly until the torque step-up. During the step-up the controller with an upper node limit performs much worse than the benchmark. This shows that cutting the branch-and-bound algorithm due to time constraints can lead to suboptimality and deteriorate the controller's performance.
 
 We can conclude that branch-and-bound algorithms are well suited for FCS-MPC with torque tracking during most operational modes, such as ramps, steady-state, and step-downs. Some operational conditions, such as torque step-ups lead to a great number of parent nodes that need to be traversed to find an optimal solution. They make branch-and-bound algorithms badly suited for solving the FCS-MPC's optimization problem. This raises the question on how to solve for good-enough solutions in real time during these operational conditions.
 
 
 \subsection{Applicability of different speed-ups}\label{sec:0}
-We focus on solving one SDP relaxation per controller sample to speed-up solving during reference step-ups. On average, directly applying the SDP guess does not lead to a good average performance compared to the educated guess with a branch-and-bound algorithm (see Table \ref{tab:2}). Nevertheless, the SDP relaxation has a constant solving time in every operational mode, when fixing the number of gradient descent iterations. Therefore, it is able to compute a good-enough solution, when the branch-and-bound algorithm fails due to its varying solving time. We thought of the following two algorithms that apply an SDP guess:
-\begin{enumerate}
-	\item \textit{\Edsdp} is a branch-and-bound algorithm with an upper limit of 250 parent nodes. But it starts with the best of the educated guess and the SDP guess.
-	\item \textit{\Edplus} is a branch-and-bound algorithm that uses an educated guess, with an upper limit of 250 parent nodes. Additionally, an SDP guess is computed in parallel. In the final step, the best of the two is chosen.
-\end{enumerate}
-To benchmark improvements, we introduce the conventional FSC-MPC; \textit{\Ed} is a branch-and-bound algorithm that starts with an educated guess, with an upper limit of 250 parent nodes.
+We focus on solving one SDP relaxation per controller sample to speed up solving during reference steps. On average, directly applying the SDP guess does not lead to a good average performance compared to the educated guess with a branch-and-bound algorithm (see Table \ref{tab:2}). Nevertheless, the SDP relaxation has a constant solving time in every operational mode, when fixing the number of gradient descent iterations. Therefore, it is able to compute a good-enough solution, when the branch-and-bound algorithm fails due to its varying solving time. 
+
 Both, \Edsdp and \Edplus can potentially be executed in real time. Solving the SDP relaxation takes longer than obtaining the educated guess. It is difficult to estimate the number of parent nodes that corresponds to the additional computational complexity of the SDP guess. This makes a comparison of \Ed and \Edsdp difficult. Thus, we use \Edplus to benchmark improvements compared to \Ed. Computing the SDP guess in parallel does not influence the number of traversed parent nodes in branch-and-bound and therefore, eases the comparison.
 
 Note that \Edsdp has an at least as good solution as \Edplus, as the branch-and-bound algorithm can only improve its initial solution. Thus, \Edsdp gives a lower bound for the performance of both algorithms.
-
-Note, we could also improve the branch-and-bound algorithm by giving an estimate of the future cost in a branch. This would closer relate to the speed-up of \cite{NL-SDA}, discussed in Section \ref{sec:1}. SDP relaxations can be used to get a lower bound on the future branch cost. This method was so far not implemented, due to the higher computational effort of solving an SDP relaxation multiple times in a controller sample. During simulations we have observed that getting a realistic guess takes at least 250 gradient descent iterations, when using the first-order scs solver \cite{scs}. Lets assume that an SDP would be executed only in the root-note. In the worst case it will be used 27 times, which would lead to 6750 gradient descent iterations in addition to the normal branch-and-bound execution. So far, we do not expect a good-enough trade off between the resulting reduction of visited parent nodes and executed gradient descent iterations to solve the branch-and-bound algorithm in real time.
 
 %There exist various possibilities to extract a 1-dimensional solution from the SDP matrix $\b{X}$. The computational time also depends on this estimate. Table \ref{tab:1} compares the average cost of the different guesses. We can observe that ... -> rounding first column is good enough!
 %
@@ -188,7 +180,7 @@ Note, we could also improve the branch-and-bound algorithm by giving an estimate
 \subsection{Performance of algorithms}
 We will now apply the above-mentioned \Edplus to see the benefit for solve an SDP relaxation once a controller sample. A comparison between \Edplus, \Ed and \textit{\Opt} is done, where \textit{\Opt} is a branch-and-bound algorithm that starts with an educated guess. It does not have an upper node limit and serves as an optimal benchmark.
 
-Figure \ref{fig:3} showed a comparison of \Opt and \Ed, which where referred to as \textit{No node limit} and \textit{Node limit}, respectively. Figure \ref{fig:4} additionally shows the torque that is observed for \Edplus. All controllers behave very similarly until the step-up. At the step-up \Ed performs badly, while \Edplus follows the reference about as good as the benchmark \Opt. A similar behavior can be observed in the absolute stator flux tracking, depicted in Figure \ref{fig:7}. This behavior can also be seen in the accumulated cost depicted in Figure \ref{fig:5}. It shows how the cost of \Ed accumulates significantly more than the other algorithms during the step-up. Figure \ref{fig:6} shows the number of nodes that are visited by the different algorithms. We can observe the high number of parent nodes that \Opt traverses, while \Ed and \Edplus are cut at 250 parent nodes. \Ed reaches the limit $n_p = 250$ for longer time than \Edplus. The reason is that the SDP helps \Edplus to follow the reference fast during step-up, while \Ed gets stuck for a while. This shows that the SDP approximation is able to achieve a close-to-optimal performance when the branch-and-bound algorithm is not able to. 
+Figure \ref{fig:3} showed a comparison of \Opt and \Ed, which where referred to as \textit{No node limit} and \textit{Node limit}, respectively. Figure \ref{fig:4} additionally shows the torque that is observed for \Edplus. All controllers behave very similarly until the step-up. At the step-up \Ed performs badly, while \Edplus follows the reference about as good as the benchmark \Opt. A similar behavior can be observed in the stator flux magnitude tracking, depicted in Figure \ref{fig:7}. This behavior can also be seen in the accumulated cost depicted in Figure \ref{fig:5}. It shows how the cost of \Ed accumulates significantly more than the other algorithms during the step-up. Figure \ref{fig:6} shows the number of nodes that are visited by the different algorithms. We can observe the high number of parent nodes that \Opt traverses, while \Ed and \Edplus are cut at \nodelim parent nodes. \Ed reaches the limit $n_p = \nodelim$ for longer time than \Edplus. The reason is that the SDP helps \Edplus to follow the reference fast during step-up, while \Ed gets stuck for a while. This shows that the SDP approximation is able to achieve a close-to-optimal performance when the branch-and-bound algorithm is not able to. 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=.7\textwidth]{Images/Fig4}
@@ -228,6 +220,8 @@ Figure \ref{fig:3} showed a comparison of \Opt and \Ed, which where referred to 
 %	\label{fig:8}
 %\end{figure}
 
-Figures \ref{fig:4} to \ref{fig:6} were all computed for 250 gradient descent iterations to solve the SDP relaxation. To compare this performance to a possible optimum, we ran the same simulation with an upper limit of 500 gradient descent iterations. The resulting torques and accumulated costs \Edsdp and \Edplus approach the dynamics of \Opt even closer in this case. This leads to the conclusion that already applying as many iterations in the SDP solver leads to close-to-optimal performance. %Given we can execute more gradient descent iterations, \Edsdp and \Edplus approach \Opt even closer.
+Figures \ref{fig:4} to \ref{fig:6} were all computed for \iterlim gradient descent iterations to solve the SDP relaxation. To compare this performance to a possible optimum, we ran the same simulation with an upper limit of 500 gradient descent iterations. The resulting torques and accumulated costs \Edsdp and \Edplus approach the dynamics of \Opt even closer in this case. This leads to the conclusion that already applying as many iterations in the SDP solver leads to close-to-optimal performance. %Given we can execute more gradient descent iterations, \Edsdp and \Edplus approach \Opt even closer.
+
+\section{Controller sampling times}
 
 

@@ -29,6 +29,7 @@
 \usepackage{xcolor,calc}
 \usetikzlibrary{arrows}
 \usetikzlibrary{shapes.geometric}
+\usepackage{xspace}
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}%
 % \usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
 
@@ -41,9 +42,11 @@
 \newcommand{\ph}{\mathrm{ph}}
 \newcommand{\sw}{\mathrm{sw}}
 \newcommand{\s}{\mathrm{s}}
+\renewcommand{\r}{\mathrm{r}}
 \newcommand{\TDD}{\mathrm{TDD}}
 \newcommand{\err}{\mathrm{err}}
 \newcommand{\p}{\mathrm{p}}
+\newcommand{\T}{\mathrm{T}}
 \newcommand{\U}{\mathrm{u}}
 \newcommand{\temp}{\mathrm{temp}}
 \newcommand{\PI}{\mathrm{PI}}
@@ -70,8 +73,11 @@
 \DeclareSIUnit{\rpm}{rpm}
 \newcommand{\Opt}{Opt }
 \newcommand{\Ed}{Ed guess }
-\newcommand{\Edsdp}{Ed \& sdp guess }
-\newcommand{\Edplus}{Ed guess + sdp }
+\newcommand{\Edsdp}{FCS-MPC-SG\xspace}
+\newcommand{\Edplus}{FCS-MPC-PS\xspace}
+
+\newcommand{\nodelim}{250\xspace}
+\newcommand{\iterlim}{500\xspace}
 
 \DeclareMathOperator*{\argmin}{\mathrm{argmin}}
 \definecolor{blueCol}{rgb}{0, 0.447 0.741}
@@ -86,7 +92,7 @@
 	Dr. Martinus Dorfling
 }
 
-\title{High-Speed Finite Control Set Model Predictive Control for Torque Tracking on Power Electronics}
+\title{Finite Control Set Model Predictive Control for Torque Tracking}
 
 
 \begin{document}

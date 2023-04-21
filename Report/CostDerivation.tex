@@ -1,0 +1,381 @@
+\documentclass{scrartcl}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=black]{hyperref}
+\usepackage{enumitem}
+\usepackage{wrapfig}
+\usepackage{gensymb}
+\usepackage{bbm}
+\usepackage{mathtools}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tikz,pgfplots}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\usepackage{booktabs}
+\usepackage{xcolor,calc}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes.geometric}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+% \usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+
+\newcommand{\dc}{\mathrm{dc}}
+\newcommand{\abc}{\mathrm{abc}}
+\newcommand{\A}{\mathrm{a}}
+\newcommand{\B}{\mathrm{b}}
+\newcommand{\C}{\mathrm{c}}
+\newcommand{\g}{\mathrm{g}}
+\newcommand{\ph}{\mathrm{ph}}
+\newcommand{\sw}{\mathrm{sw}}
+\newcommand{\s}{\mathrm{s}}
+\newcommand{\TDD}{\mathrm{TDD}}
+\newcommand{\err}{\mathrm{err}}
+\newcommand{\p}{\mathrm{p}}
+\newcommand{\U}{\mathrm{u}}
+\newcommand{\temp}{\mathrm{temp}}
+\newcommand{\PI}{\mathrm{PI}}
+\newcommand{\unc}{\mathrm{unc}}
+\newcommand{\ctrl}{\mathrm{ctrl}}
+\newcommand{\kI}{k_\mathrm{I}}
+\newcommand{\kP}{k_\mathrm{P}}
+\newcommand{\mavg}{\mathrm{mavg}}
+\newcommand{\Sim}{\mathrm{sim}}
+\renewcommand{\b}[1]{\boldsymbol{#1}}
+\newlength{\fheight}
+\newlength{\fwidth}
+\newcommand{\I}{\b{I}}
+\newcommand{\0}{\b{0}}
+\newcommand{\bab}{\mathrm{bab}}
+\newcommand{\ed}{\mathrm{ed}}
+\newcommand{\ini}{\mathrm{ini}}
+\newcommand{\augp}{\mathrm{aug}}
+\newcommand{\augs}{\mathrm{aug}}
+\newcommand{\opt}{\mathrm{opt}}
+\newcommand{\Tfac}{T_\mathrm{factor}}
+\renewcommand{\sp}{\text{ }}
+\DeclareSIUnit{\pu}{pu}
+
+\DeclareMathOperator*{\argmin}{\mathrm{argmin}}
+\definecolor{blueCol}{rgb}{0, 0.447 0.741}
+
+\begin{document}
+
+%\title{}
+%\subtitle{}
+%\author{}
+%
+%%\maketitle
+%\tableofcontents
+%\clearpage
+
+\section{Modelling}
+
+\subsection{Flux Dynamics}
+We utilize the discrete time dynamics of the stator and rotor fluxes $\b{\psi}_s$ and $\b{\psi}_r$ from \cite{gey_book}:
+\begin{align*}
+	\b{\psi}_s(k+1) &= \b{A}_1\b{\psi}_s(k) + \b{B}_1\b{\psi}_r(k) + \b{B}_2\b{u}(k), \\
+	\b{\psi}_r(k+1) &= \b{B}_3\b{\psi}_s(k) + \b{A}_2\b{\psi}_r(k),
+\end{align*}
+where $\b{u}(k) \in \{-1,0,1\}^3$ is the normalized input.
+These dynamics can be summarized to
+\begin{equation*}
+	\b{x}(k+1) = \b{Ax}(k) + \b{Bu}(k),
+\end{equation*}
+where
+\begin{equation*}
+	A = \left[\begin{array}{cc}
+		\b{A}_1 & \b{B}_1 \\
+		\b{B}_3 & \b{A}_2
+	\end{array}\right],\ \b{B} = \left[\begin{array}{c}
+		\b{B}_2 \\
+		\b{0}
+	\end{array}\right].
+\end{equation*}
+The values of the rotor and stator flux at time step $k+l$, given the state $x(k)$, all inputs $\b{u}(k),\ \b{u}(k+1),\ldots,\ \b{u}(k+l-1)$, and $l \geq 2$ can now be computed as
+\begin{align}\label{eq:0}
+	\b{\psi}_s(k+l) &= \left[\b{A}_1\ \b{B}_1\right]\b{A}^{l-1}\b{x}(k) + \left[\b{A}_1\ \b{B}_1\right]\b{A}^{l-2}\b{Bu}(k) + \\
+	&\ + \left[\b{A}_1\ \b{B}_1\right]\b{A}^{l-3}\b{Bu}(k+1) + \ldots + \left[\b{A}_1\ \b{B}_1\right]\b{Bu}(k+l-1) + \b{B}_2\b{u}(k+l) \nonumber
+\end{align}
+and
+\begin{align} \label{eq:1}
+	\b{\psi}_r(k+l) &= \left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-1}\b{x}(k) + \left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-2}\b{Bu}(k) + \\
+	&\ + \left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-3}\b{Bu}(k+1) + \ldots + \left[\b{B}_3\ \b{A}_2\right]\b{Bu}(k+l-1). \nonumber
+\end{align}
+
+\subsection{Torque and Absolute Stator Flux}
+
+The absolute stator flux is computed via the $\ell_2$-norm,
+\begin{equation*}
+	\Psi_s(k) = ||\b{\psi}_s(k)||_2.
+\end{equation*}
+The electric torque $T$ is defined as
+\begin{equation*}
+	T(k) = \frac{1}{\mathrm{pf}}\frac{X_m}{D}\b{\psi}_r\times\b{\psi}_s = \Tfac\b{\psi}_r\times\b{\psi}_s,
+\end{equation*}
+where $\mathrm{pf},\ X_m,$ and $D$ resemble machine parameters and are summarized under $\Tfac = \frac{1}{pf}\frac{X_m}{D}$. The operator $\times$ is the cross-product and can be replaced by the matrix $\Xi$:
+\begin{equation*}
+	\b{\psi}_r\times\b{\psi}_s = \b{\psi}_r^\top\Xi\b{\psi}_s,\ \text{where } \Xi = \left[\begin{array}{cc}
+		0 & 1 \\
+		-1 & 0
+	\end{array}\right].
+\end{equation*}
+
+
+
+\section{Cost Formulation}
+
+\subsection{Cost Function}
+
+The 1-step cost function from \cite{gey_book} is specified as:
+\begin{equation*}
+	J(k) = \lambda_T ||T^*(k+1)-T(k+1)||_2 + (1-\lambda_T) || (\Psi_s^*(k+1))^2-(\Psi_s(k+1))^2||_2 + \lambda_u ||\Delta \b{u}(k)||_1,
+\end{equation*}
+where $T^*(k)$ and $\Psi_s^*(k)$ refer to the Torque- and absolute stator flux references, respectively.
+Using an extended horizon of $N \in \mathbb{N}$ leads to the cost function
+\begin{equation*}
+	J_N(k) = \sum_{l = k}^{k+N-1} \lambda_T ||T^*(l+1)-T(l+1)||_2 + (1-\lambda_T) ||(\Psi_s^*(l+1))^2-(\Psi_s(l+1))^2||_2 + \lambda_u ||\Delta \b{u}(l)||_1.
+\end{equation*}
+
+
+\subsection{Matrices for Full Horizon Dynamics}
+
+Next, we will obtain a direct representation of the cost with matrices. Therefore, we introduce the full-horizon variables in Table \ref{tab:0}.
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{ll}
+		\toprule
+		variable name & variable description \\
+		\midrule[\heavyrulewidth]
+		$\b{\psi}_s(k) = [\psi_s^\top(k+1),\ \psi_s^\top(k+2),\ldots,\ \psi_s^\top(k+N)]^\top$ & Stator Flux \\
+		$\b{\psi}_r(k) = [\psi_r^\top(k+1),\ \psi_r^\top(k+2),\ldots,\ \psi_r^\top(k+N)]^\top$ & Rotor Flux \\
+		$\b{T}(k) = [T(k+1),\ T(k+2),\ldots,\ T(k+N)]^\top$ & Torque \\
+		$\b{\Psi}_s(k) = [\Psi_s(k+1),\ \Psi_s(k+2),\ldots,\ \Psi_s(k+N)]^\top$ & Absolute stator flux \\
+		$\b{T}^*(k) = [T^*(k+1),\ T^*(k+2),\ldots,\ T^*(k+N)]^\top$ & Torque reference \\
+		$\b{\Psi}^*_s(k) = [\Psi_s^*(k+1),\ \Psi^*_s(k+2),\ldots,\ \Psi_s^*(k+N)]^\top$ & Absolute stator flux reference \\
+		$\b{U}(k) = [\b{u}^\top(k),\ \b{u}^\top(k+1),\ldots,\ \b{u}^\top(k+N-1)]^\top$ & Inputs \\
+		\bottomrule
+	\end{tabular}
+	\caption{Full horizon variables}
+	\label{tab:0}
+\end{table}\\
+While the references $\b{T}^*(k),\ \b{\Psi}^*(k)$ are given, we will have to find a formulation to compute the actual values of $\b{\Psi}_s(k)$ and $\b{T}(k)$.\\
+Utilizing \eqref{eq:0} and \eqref{eq:1} we get the matrix representations
+\begin{equation*}
+		\psi_s(k+l) = \underbrace{\left[\b{A}_1\ \b{B}_1\right]\b{A}^{l-1}}_{\b{\Gamma}_\s}\b{x}(k) + \underbrace{\left[\begin{array}{ccccc}
+		\left[\b{A}_1\ \b{B}_1\right]\b{A}^{l-2}\b{B} & \left[\b{A}_1\ \b{B}_1\right]\b{A}^{l-3}\b{B} & \ldots & \left[\b{A}_1\ \b{B}_1\right]\b{B} & \b{B}_2
+		\end{array} \right]}_{\b{\Upsilon}_\s}\b{U}(k)
+\end{equation*}
+and
+\begin{equation*}
+	\psi_r(k+l) = \underbrace{\left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-1}}_{\b{\Gamma}_r}\b{x}(k) + \underbrace{\left[\begin{array}{ccccc}
+		\left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-2}\b{B} & \left[\b{B}_3\ \b{A}_2\right]\b{A}^{l-3}\b{B} & \ldots & \left[\b{B}_3\ \b{A}_2\right]\b{B} & \b{0}
+	\end{array} \right]}_{\b{\Upsilon}_r}\b{U}(k).
+\end{equation*}
+
+%\clearpage
+%
+%This can further be used to obtain the full horizon of the stator flux
+%\begin{align*}
+%	\b{\psi}_s(k) &=  \left[	\b{A}_1 \b{B}_1\right] \left[\begin{array}{c}
+%		\I \\
+%		\b{A} \\
+%		\b{A}^2 \\
+%		\vdots \\
+%		\b{A}^{N-1}
+%	\end{array}\right] \b{x}(k) + 
+%\left[\begin{array}{ccccc}
+%	\b{B}_2 & & & & \b{0} \\
+%	\left[\b{A}_1\ \b{B}_1\right]\b{B} & \b{B}_2 & & & \\
+%	\left[\b{A}_1\ \b{B}_1\right]\b{AB} & \left[\b{A}_1\ \b{B}_1\right]\b{B} & \b{B}_2 && \\
+%	\vdots & \vdots & \vdots & \ddots & \\
+%	\left[\b{A}_1\ \b{B}_1\right]\b{A}^{N-2}\b{B} & \left[\b{A}_1\ \b{B}_1\right]\b{A}^{N-3}\b{B} & \left[\b{A}_1\ \b{B}_1\right]\b{A}^{N-4}\b{B} & \cdots & \b{B}_2 \\
+%\end{array}\right]\b{U}(k) \\
+%	&=: \b{\Gamma}_s\b{x}(k) + \b{\Upsilon}_s\b{U}(k)
+%\end{align*}
+%and the rotor flux
+%\begin{align*}
+%	\b{\psi}_r(k) &=  \left[\b{B}_3 \b{A}_2\right] \left[\begin{array}{c}
+%		\I \\
+%		\b{A} \\
+%		\b{A}^2 \\
+%		\vdots \\
+%		\b{A}^{N-1}
+%	\end{array}\right] \b{x}(k) + 
+%	\left[\begin{array}{ccccc}
+%		\b{0} & & & & \b{0} \\
+%		\left[\b{B}_3 \b{A}_2\right] \b{B} & \b{0} & & & \\
+%		\left[\b{B}_3 \b{A}_2\right] \b{AB} & \left[\b{B}_3 \b{A}_2\right] \b{B} & \b{0} && \\
+%		\vdots & \vdots & \vdots & \ddots & \\
+%		\left[\b{B}_3 \b{A}_2\right] \b{A}^{N-2}\b{B} & \left[\b{B}_3 \b{A}_2\right] \b{A}^{N-3}\b{B} & \left[\b{B}_3 \b{A}_2\right] \b{A}^{N-4}\b{B} & \cdots & \b{0} \\
+%	\end{array}\right]\b{U}(k)\\
+%	&=: \b{\Gamma}_r\b{x}(k) + \b{\Upsilon}_r\b{U}(k).
+%\end{align*}
+
+
+
+\subsection{Matrices for Torque, Stator Flux, and Switching Penalty}
+Stator flux:
+\begin{align*}
+	\Psi_s^2(k+l) &= ||\b{\psi}_s(k+l)||_2^2 
+		= \b{\psi}_s^\top(k+l)\b{\psi}_s(k+l)
+		= \left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right)^\top\left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right) \\
+		&= \b{x}^\top(k)\b{\Gamma}_\s^\top \b{\Gamma}_\s \b{x}(k)
+		+ \b{x}^\top(k)\b{\Gamma}_\s^\top\b{\Upsilon}_\s\b{U}(k)
+		+ \b{U}^\top(k)\b{\Upsilon}_\s^\top\b{\Gamma}_\s\b{x}(k)
+		+ \b{U}^\top(k)\b{\Upsilon}_\s^\top\b{\Upsilon}_\s\b{U}(k)\\
+		&= [\begin{array}{cc}
+			1 & \b{U}^\top(k)
+		\end{array}] \left[\begin{array}{cc}
+		\b{x}^\top(k) \b{\Gamma}_\s^\top\b{\Gamma}_\s \b{x}(k) & \b{x}^\top(k)\b{\Gamma}_\s^\top\b{\Upsilon}_\s \\
+		\b{\Upsilon}_\s^\top\b{\Gamma}_\s\b{x}(k) & \b{\Upsilon}_\s^\top\b{\Upsilon}_\s
+	\end{array}\right] \left[\begin{array}{c}
+		1 \\
+		\b{U}(k)
+	\end{array}\right]
+\end{align*}
+%Full horizon stator flux:
+%\begin{align*}
+%	\b{\Psi}_s^2(k) = \left[\begin{array}{c}
+%		\Psi_s^2(k)\\
+%		\Psi_s^2(k+1)
+%	\end{array}\right],
+%\end{align*}
+%where the squared-operation is an element-wise operation.
+Torque:
+\begin{align*}
+	T(k+l) &= \Tfac\b{\psi}_r^\top(k+l)\b{\Xi}\b{\psi}_s(k+l)
+	= \Tfac\left(\b{\Gamma}_r\b{x}(k) + \b{\Upsilon}_r\b{U}(k)\right)^\top \b{\Xi} \left(\b{\Gamma}_\s\b{x}(k) + \b{\Upsilon}_\s\b{U}(k)\right) \\
+	&= \Tfac\left(\b{x}^\top(k)\b{\Gamma}_r^\top \b{\Xi} \b{\Gamma}_r \b{x}(k)
+	+ \b{x}^\top(k)\b{\Gamma}_r^\top \b{\Xi} \b{\Upsilon}_\s\b{U}(k)
+	+ \b{U}^\top(k)\b{\Upsilon}_r^\top \b{\Xi} \b{\Gamma}_\s\b{x}(k)
+	+ \b{U}^\top(k)\b{\Upsilon}_r^\top \b{\Xi} \b{\Upsilon}_\s\b{U}(k)\right) \\
+	&= \Tfac[\begin{array}{cc}
+		1 & \b{U}^\top(k)
+	\end{array}] \left[\begin{array}{cc}
+		\b{x}^\top(k) \b{\Gamma}_r^\top \b{\Xi}\b{\Gamma}_\s \b{x}(k) & \b{x}^\top(k)\b{\Gamma}_r^\top \b{\Xi} \b{\Upsilon}_\s \\
+		\b{\Upsilon}_r^\top \b{\Xi} \b{\Gamma}_\s\b{x}(k) & \b{\Upsilon}_r^\top \b{\Xi} \b{\Upsilon}_\s
+	\end{array}\right] \left[\begin{array}{c}
+	1 \\
+	\b{U}(k)
+\end{array}\right]
+\end{align*}
+%\begin{align*}
+%	\b{T}(k) &= \left[\begin{array}{c}
+%		T(k+1) \\
+%		T(k+2) \\
+%		\vdots \\
+%		T(k+N+1)
+%	\end{array}\right]
+%	= \Tfac\left[\begin{array}{c}
+%		\b{\psi}_r(k+1)\Xi\b{\psi}_s(k+1) \\
+%		\b{\psi}_r(k+2)\Xi\b{\psi}_s(k+2) \\
+%		\vdots \\
+%		\b{\psi}_r(k+N+1)\Xi\b{\psi}_s(k+N+1)
+%	\end{array}\right] \\
+%	&= \Tfac\b{\psi}_r(k) \left[\begin{array}{ccc}
+%		\Xi & & \\
+%		& \ddots & \\
+%		& & \Xi
+%	\end{array}\right]\b{\psi}_s(k) := \Tfac\b{\psi}_r(k) \Xi \b{\psi}_s(k)
+%\end{align*}
+The switching penalty is a term that depends on each phase at each time step. Thus, the switching transition $\Delta\b{u}(k)$ cannot be calculated in closed form, but has to be split up into each phase. The term $\Delta \b{u}(k)$ additionally depends on the previous input, which necessitates the usage of the constant term. Next, the polynomial decomposition for two ($\A$, $\B$) of three phases at time step $k$ are are shown.
+\begin{align*}
+	\Delta u_\A(k) &= u_\A(k) - u_\A(k-1) \\
+	&= [\begin{array}{cccccc}
+		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
+	\end{array}]
+	\left[\begin{array}{ccc}
+		-\b{u}_\A(k-1) & 1 & \0 \\
+		 & \0 & 
+	\end{array}\right]
+	\left[\begin{array}{c}
+		1 \\
+		\b{u}_\A(k)\\
+		\b{u}_\B(k)\\
+		\b{u}_\C(k)\\
+		\vdots\\
+		\b{u}_\C(k+N-1)
+	\end{array}\right]
+\end{align*}
+\begin{align*}
+\Delta u_\B(k) &= u_\B(k) - u_\B(k-1) \\
+&= [\begin{array}{cccccc}
+	1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
+\end{array}]
+\left[\begin{array}{cccc}
+	-\b{u}_\B(k-1) & 0 & 1 & \0 \\
+	& \0 &  & 
+\end{array}\right]
+\left[\begin{array}{c}
+	1 \\
+	\b{u}_\A(k)\\
+	\b{u}_\B(k)\\
+	\b{u}_\C(k)\\
+	\vdots\\
+	\b{u}_\C(k+N-1)
+\end{array}\right]
+\end{align*}
+The computation of all other switching transitions depend on the Inputs $\b{U}(k)$ so that the polynomial presentation can be generalized to 
+\begin{align*}
+	\Delta u_\A(k) &= u_\A(k) - u_\A(k-1) \\
+	&= [\begin{array}{cccccc}
+		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
+	\end{array}]
+	\left[\begin{array}{cccc}
+		0 & \0_{1\times3l} & -1 & \0 \\
+		& \0 & &
+	\end{array}\right]
+	\left[\begin{array}{c}
+		1 \\
+		\b{u}_\A(k)\\
+		\b{u}_\B(k)\\
+		\b{u}_\C(k)\\
+		\vdots\\
+		\b{u}_\C(k+N-1)
+	\end{array}\right]
+\end{align*}
+for the a-phase and
+\begin{align*}
+	\Delta u_\B(k) &= u_\B(k+l) - u_\B(k+l-1) \\
+	&= [\begin{array}{cccccc}
+		1 & \b{u}_\A(k) & \b{u}_\B(k) & \b{u}_\C(k) & \ldots & \b{u}_\C(k+N-1)
+	\end{array}]
+	\left[\begin{array}{cccc}
+		0 & \0_{1\times(3l+1)} & 1 & \0 \\
+		& \0 &  & 
+	\end{array}\right]
+	\left[\begin{array}{c}
+		1 \\
+		\b{u}_\A(k)\\
+		\b{u}_\B(k)\\
+		\b{u}_\C(k)\\
+		\vdots\\
+		\b{u}_\C(k+N-1)
+	\end{array}\right]
+\end{align*}
+for the b-phase, where $l \in \{1,\ 2, \ldots,\ N-1\}$.
+
+\subsection{Final cost formulation}
+
+
+
+
+\bibliographystyle{ieeetr}
+\bibliography{bibliography}
+
+
+
+\end{document}
