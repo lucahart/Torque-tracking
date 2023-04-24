@@ -13,9 +13,10 @@ ctrl3 = struct();
 % Quick setup of simulation parameters (set and remove whatever you want)
 % -------------------------------------------------------------------------
 ctrl0.node_limit = inf;
-% ctrl2.type = 'ed & sdp guess';
+ctrl2.type = 'ed & sdp guess';
 ctrl3.verbose = 1;
 ctrl3.type = 'ed guess + sdp';
+ctrl2.deactivate = 1;
 % -------------------------------------------------------------------------
 
 % Physical system
@@ -82,7 +83,7 @@ for k = 1:n_controller_samples
     [u0, ctrl0, iter0, nodes0, times0, cost0] = run_ctrl0(y(:,1), u_prev(:,1), ref(:,k+1:end), ctrl0);
     [u1, ctrl1, iter1, nodes1, times1, cost1] = run_ctrl1(y(:,2), u_prev(:,2), ref(:,k+1:end), ctrl1);
     [u2, ctrl2, iter2, nodes2, times2, cost2] = run_ctrl2(y(:,3), u_prev(:,3), ref(:,k+1:end), ctrl2);
-    [u3, ctrl3, iter3, nodes3, times3, cost3] = run_ctrl2(y(:,3), u_prev(:,3), ref(:,k+1:end), ctrl3);
+    [u3, ctrl3, iter3, nodes3, times3, cost3] = run_ctrl3(y(:,4), u_prev(:,4), ref(:,k+1:end), ctrl3);
     u = [u0 u1 u2 u3];
     
     % Apply physical system steps

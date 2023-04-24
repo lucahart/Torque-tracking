@@ -24,6 +24,8 @@ ref_ctrl = ref(1,1:end-1);
 % *************************************************************************
 
 
+if 0 % comment out some plots
+
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Plot states
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -65,6 +67,7 @@ ylim([-1.2,1.2]);
 xlim([0,t_max]);
 grid on;
 
+end
 
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Plot torque
@@ -189,20 +192,25 @@ fprintf('Elapsed simulation time:     %.2fs \n\n', t_sim);
 % Print average switching frequency
 del_u0 = abs([sim.u_0 squeeze(u_vec(:,1,1:end-1))] - squeeze(u_vec(:,1,:)));
 f_sw0 = 1/(12*t_max)*sum(del_u0, 'all');
-del_u1 = abs([sim.u_0 squeeze(u_vec(:,2,1:end-1))] - squeeze(u_vec(:,2,:)));
-f_sw1 = 1/(12*t_max)*sum(del_u1, 'all');
-fprintf('Average switching frequency (Opt):            %.2fHz \n', f_sw0);
-fprintf('Average switching frequency (Ed guess):       %.2fHz \n', f_sw1);
+fprintf('Average switching frequency:            %.2fHz \n', f_sw0);
 % Print torque rms error
-fprintf('Torque rms error: (Opt)                       %.4fe-3 \n', ...
+fprintf('Torque rms error:                       %.4fe-3 \n', ...
     norm(T_sim(1,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
-fprintf('Torque rms error: (Ed guess)                  %.4fe-3 \n', ...
-    norm(T_sim(2,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
 
 % Print absolute flux rms error
-fprintf('Absolute flux rms error: (Opt)                %.4fe-3 \n', ...
+fprintf('Absolute flux rms error:                %.4fe-3 \n\n', ...
     norm(Psi_sim(1,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
-fprintf('Absolute flux rms error: (Ed guess)           %.4fe-3 \n', ...
-    norm(Psi_sim(2,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
+
+% Parent nodes visited
+fprintf('---------------------------------------\n')
+fprintf('       Bad guess   Ed guess   Opt guess\n')
+fprintf('---------------------------------------\n')
+fprintf('mean:  %.2f       %.2f       %.2f\n', ...
+    mean(node_count(3,:)), mean(node_count(1,:)), mean(node_count(2,:)))
+fprintf('std:   %.2f       %.2f      %.2f\n', ...
+    std(node_count(3,:)), std(node_count(1,:)), std(node_count(2,:)))
+fprintf('max:   %.0f        %.0f        %.0f\n', ...
+    max(node_count(3,:)), max(node_count(1,:)), max(node_count(2,:)))
+fprintf('---------------------------------------\n')
 
 

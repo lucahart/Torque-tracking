@@ -69,7 +69,14 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     %     Default: eps = 1e-12.
     %   ctrl.verbose: Prints whether the SDP was used when set to 1. No
     %     printing if volatile = 0.
-    %     Default: volatile = 0
+    %     Default: volatile = 0.
+    %   ctrl.deactivate: Deactivates the controller. When executing the
+    %     controller function handle the controller will not start but
+    %     return only default values. Default values are 0 for all
+    %     measurements and NaN for the controller inputs. Can be used to
+    %     spontaniously remove controllers out of the simulation without
+    %     changing the whole simulation setting.
+    %     Default: dectivate = 0.
 
 
     % *********************************************************************
@@ -89,15 +96,19 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep.N = 5;
 
     % Multi-step controller with speed-up
-    ctrl_nstep_SDP.lam_u = 6.15e-3;
+   
+    ctrl_nstep_SDP.lam_u = 13e-3; % use lam_u = 13e-3, 21e-3, 21e-3,8e-3 at 
+                                  % T_s = 25e-6, 50e-6, 75e-6, 100e-6 for
+                                  % f_sw = 226Hz (yes, it's veeery nonlin.)
     ctrl_nstep_SDP.lam_T = .052;
     ctrl_nstep_SDP.T_s = 25e-6;
     ctrl_nstep_SDP.N = 5;
-    ctrl_nstep_SDP.node_limit = 350;
+    ctrl_nstep_SDP.node_limit = 150;
     ctrl_nstep_SDP.estimate = 'all';
     ctrl_nstep_SDP.type = 'ed guess';
     ctrl_nstep_SDP.eps = 1e-12;
     ctrl_nstep_SDP.verbose = 0;
+    ctrl_nstep_SDP.deactivate = 0;
 
     
     % *********************************************************************

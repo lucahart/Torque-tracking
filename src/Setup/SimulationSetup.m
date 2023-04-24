@@ -26,6 +26,12 @@ function sim = SimulationSetup(sys, sim_pre, discretization)
     %     If apply_only_opt = 0, the all controllers are executed and the 
     %     inputs are applied to seperate systems paralelly.
     %     Default: apply_only_opt = 0
+    %   sim.seed: Random seed used for measurement noise
+    %     Default: seed = 5
+    %   sim.a, sim.b: Values for defining the measurement noise
+    %     distribution \eta ~ U(a,b), where U(a,b) is the uniform
+    %     distribution over the interval [a,b].
+    %     Default: a = -2.5e-3, b = 2.5e-3
     %   sim.steps: Cell-object containing all information about the steps
     %     that are applied to the reference. See generate_reference for a
     %     detailled documentation of the used format.
@@ -35,7 +41,7 @@ function sim = SimulationSetup(sys, sim_pre, discretization)
     %     detailled documentation of the used format.
     %     Default: ramps = {[1 0 0 2 1]}
     %   sim.x_0: Initial state of the system.
-    %     Default: x_0 = [-.99 -.15 -.91 .07]' (steady-state, Psi=1, T=.5)
+    %     Default: x_0 = [-1 -.06 -.91 -.06]' (steady-state, Psi=1, T=0)
     %   sim.u_0: Initial input of the system.
     %     Default: u_0 = [0 0 0]'
     
@@ -50,12 +56,12 @@ function sim = SimulationSetup(sys, sim_pre, discretization)
     sim.apply_only_opt = 0;
     sim.steps = {[1 3 .2], [1 7 1]};
     sim.ramps = {[1 0 0 2 1]};
-    sim.seed = 3;
+    sim.seed = 5;
     sim.a = -2.5e-3;
     sim.b = 2.5e-3;
     
     % Initial state and input (steady-state values)
-    sim.x_0 = [-.99 -.15 -.91 .07]';
+    sim.x_0 = [-1 -.06 -.91 -.06]';
     sim.u_0 = zeros(3,1);
     
     

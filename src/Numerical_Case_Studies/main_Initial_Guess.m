@@ -6,13 +6,19 @@ sys = struct();
 sim = struct();
 ctrl0 = struct();
 ctrl1 = struct();
+ctrl2 = struct();
 
 % -------------------------------------------------------------------------
 % Quick setup of simulation parameters (set and remove whatever you want)
 % -------------------------------------------------------------------------
 ctrl0.node_limit = inf;
-ctrl0.N = 3;
-ctrl0.lam_u = 3.595e-3;
+ctrl1.node_limit = inf;
+ctrl2.node_limit = inf;
+sim.ramps = {};
+sim.steps = {};
+ctrl1.deactivate = 1;
+ctrl2.deactivate = 1;
+sim.x_0 = [.89 -.43 .82 -.52]'; % steady-state for T_ref = 1, Psi_ref = 1
 % -------------------------------------------------------------------------
 
 % Physical system
@@ -22,12 +28,11 @@ sys = SystemSetup(sys);
 sim = SimulationSetup(sys, sim, 'exact');
 
 % Controllers
-[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, gives J_opt as reference
-[ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1); % controller with only ed guess
-% [ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed and sdp guess
-% [ctrl3, run_ctrl3] = ControllerSetup(sys, 'n-step-SDP', ctrl3); % controller with ed guess and sdp
-n_costs  = ctrl0.n_costs + ctrl1.n_costs; % required length of cost term
-n_c = 2; % number of controllers that are simulated
+[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller initialized with ed guess
+[ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1); % controller initialized with opt guess
+[ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller initialized with bad guess
+n_costs  = ctrl0.n_costs + ctrl1.n_costs + ctrl2.n_costs; % required length of cost term
+n_c = 3; % number of controllers that are simulated
 
 
 %% Precalculations for faster simulation
@@ -54,7 +59,7 @@ u_vec = NaN(3, n_c, n_controller_samples);
 iter_count = NaN(n_c, n_controller_samples);
 node_count = NaN(n_c, n_controller_samples);
 time_count = NaN(n_c, n_controller_samples);
-cost_vec = NaN(n_costs, n_controller_samples);
+cost_vec = NaN(n_costs, n_controller_samples); %size dependent on # and ctrl type
 
 % Sampled with simulation sampling time
 x_vec_sim = nan*ones(4, n_c, n_simulation_samples);
@@ -65,6 +70,7 @@ x_vec_sim = nan*ones(4, n_c, n_simulation_samples);
 x = repmat(sim.x_0,1,n_c);
 u_prev = repmat(sim.u_0,1,n_c);
 
+% x_vec_ctrl(:,1) = x;
 x_vec_sim(:,:,1) = x;
 u_vec(:,:,1) = u_prev;
 
@@ -77,10 +83,11 @@ for k = 1:n_controller_samples
     
     % Apply controller
     [u0, ctrl0, iter0, nodes0, times0, cost0] = run_ctrl0(y(:,1), u_prev(:,1), ref(:,k+1:end), ctrl0);
+    ctrl1.U_ed = [u0; ctrl0.U_ed(1:end-3)]; % assign optimal solution as initial solution of ctrler 1
     [u1, ctrl1, iter1, nodes1, times1, cost1] = run_ctrl1(y(:,2), u_prev(:,2), ref(:,k+1:end), ctrl1);
-%     [u2, ctrl2, iter2, nodes2, times2, cost2] = run_ctrl2(y(:,3), u_prev(:,3), ref(:,k+1:end), ctrl2);
-%     [u3, ctrl3, iter3, nodes3, times3, cost3] = run_ctrl2(y(:,3), u_prev(:,3), ref(:,k+1:end), ctrl3);
-    u = [u0 u1];
+    ctrl2.U_ed = zeros(ctrl2.N*3,1); % assign a bad initial guess to ctrler 2
+    [u2, ctrl2, iter2, nodes2, times2, cost2] = run_ctrl2(y(:,3), u_prev(:,3), ref(:,k+1:end), ctrl2);
+    u = [u0 u1 u2];
     
     % Apply physical system steps
     for j = 1:simulation_samples_per_controller_sample
@@ -90,10 +97,10 @@ for k = 1:n_controller_samples
     
     % Update parameters for plotting
     u_vec(:,:,k) = u;
-    iter_count(:,k) = [iter0; iter1];
-    node_count(:,k) = [nodes0; nodes1];
-    time_count(:,k) = [times0; times1];
-    cost_vec(:,k) = [cost0; cost1]; % J_opt0, J_ed0, J_bnb1, J_ed1, J_bnb2, J_ed2, J_sdp2
+    iter_count(:,k) = [iter0; iter1; iter2];
+    node_count(:,k) = [nodes0; nodes1; nodes2];
+    time_count(:,k) = [times0; times1; times2];
+    cost_vec(:,k) = [cost0; cost1; cost2]; % J_opt0, J_ed0, J_opt1, J_ed1, J_opt2, J_ed2
     
     % Update u_prev
     u_prev = u;
@@ -112,6 +119,6 @@ x_vec_sim(:,:,end) = [];
 
 
 %% Plotting
-Plotting
+Plotting_Initial_Guess
 
 

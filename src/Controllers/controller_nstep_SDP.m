@@ -32,6 +32,13 @@ function [u_opt, ctrl, iter, nodes, times, costs] = controller_nstep_SDP(x, u_pr
     nodes = zeros(1,1);
     times = zeros(1,1);
     
+    % Do not execute controller if it's deactivated
+    if ctrl.deactivate
+        costs = zeros(ctrl.n_costs,1);
+        u_opt = NaN(3,1);
+        return
+    end
+    
     %% Run controller
     if ctrl.type == "ed guess + sdp"
         costs = zeros(ctrl.n_costs,1); % J_bnb, J_ed, J_sdp

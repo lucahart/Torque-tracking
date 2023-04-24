@@ -16,21 +16,21 @@ function sys = SystemSetup(sys_pre)
     % *********************************************************************
     
     % Machine parameters is SI unit system
-    V = 3300; % voltage [V]
-    I = 356; % current [A]
-    P = 1.587e6; % active power [W]
-    S = 2.035e6; % aparent power [VA]
+    V = 400; % voltage [V]
+    I = 4.4; % current [A]
+    S = 3.048e3; % aparent power [VA]
+    P = 2.4079e3; % active power [W]
     f_base = 50; % base frequency of stator electric field [rps]
-    p = 2; % number of poles on rotor
-    f_m_si = 596/60; % frequency of mechanical rotor [rps]
+    p = 1; % number of poles on rotor
+    f_m_si = 2875/60; % frequency of mechanical rotor [rps]
     
     % Machine parameters in pu system
-    R_s = 0.0108;
-    R_r = 0.0091;
-    X_m = 2.349;
-    X_ls = 0.1493;
-    X_lr = 0.1104;
-    v_dc = 1.930;
+    R_s = 0.0514;
+    R_r = 0.0457;
+    X_ls = 0.0591;
+    X_lr = 0.0705;
+    X_m = 2.3625;
+    v_dc = 1.9902;
     std = 5e-4; % noise standard deviation
     
     X_s = X_m + X_ls;
