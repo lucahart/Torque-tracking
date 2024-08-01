@@ -96,14 +96,13 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep.N = 5;
 
     % Multi-step controller with speed-up
-   
-    ctrl_nstep_SDP.lam_u = 13e-3; % use lam_u = 13e-3, 21e-3, 21e-3,8e-3 at 
+    ctrl_nstep_SDP.lam_u = 3.8e-3; % use lam_u = 13e-3, 21e-3, 21e-3,8e-3 at 
                                   % T_s = 25e-6, 50e-6, 75e-6, 100e-6 for
                                   % f_sw = 226Hz (yes, it's veeery nonlin.)
     ctrl_nstep_SDP.lam_T = .052;
     ctrl_nstep_SDP.T_s = 25e-6;
     ctrl_nstep_SDP.N = 5;
-    ctrl_nstep_SDP.node_limit = 150;
+    ctrl_nstep_SDP.node_limit = 500; %150;
     ctrl_nstep_SDP.estimate = 'all';
     ctrl_nstep_SDP.type = 'ed guess';
     ctrl_nstep_SDP.eps = 1e-12;

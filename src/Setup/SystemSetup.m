@@ -15,24 +15,42 @@ function sys = SystemSetup(sys_pre)
     %% Default system parameters (Make changes to this section)
     % *********************************************************************
     
+%     % Machine parameters is SI unit system
+%     V = 3100; %V = 400; % voltage [V]
+%     I = 1477.3; %I = 4.4; % current [A]
+%     S = 7.765e6; %S = 3.048e3; % aparent power [VA]
+%     P = 6.6e6; %P = 2.4079e3; % active power [W]
+%     f_base = 65.6; %f_base = 50; % base frequency of stator electric field [rps]
+%     p = 1; % number of poles on rotor
+%     f_m_si = 979.1/60; %f_m_si = 2875/60; % frequency of mechanical rotor [rps]
+
     % Machine parameters is SI unit system
-    V = 400; % voltage [V]
-    I = 4.4; % current [A]
-    S = 3.048e3; % aparent power [VA]
-    P = 2.4079e3; % active power [W]
-    f_base = 50; % base frequency of stator electric field [rps]
+    V = 3300; %V = 400; % voltage [V]
+    I = 356; %I = 4.4; % current [A]
+    S = 2e6; %S = 3.048e3; % aparent power [VA]
+    P = 1.587e6; %P = 2.4079e3; % active power [W]
+    f_base = 50; %f_base = 50; % base frequency of stator electric field [rps]
     p = 1; % number of poles on rotor
-    f_m_si = 2875/60; % frequency of mechanical rotor [rps]
-    
+    f_m_si = 596/60; %f_m_si = 2875/60; % frequency of mechanical rotor [rps]
+
+%     % Machine parameters in pu system
+%     R_s = .0048; %0.0514;
+%     R_r = .0050; %0.0457;
+%     X_ls = .1469; %0.0591;
+%     X_lr = .0974; %0.0705;
+%     X_m = 2.8468; %2.3625;
+%     v_dc = 4294/V; %1.9902; % dc-voltage [pu]
+%     std = 5e-4; % noise standard deviation
+
     % Machine parameters in pu system
-    R_s = 0.0514;
-    R_r = 0.0457;
-    X_ls = 0.0591;
-    X_lr = 0.0705;
-    X_m = 2.3625;
-    v_dc = 1.9902;
+    R_s = .0108; %0.0514;
+    R_r = .0091; %0.0457;
+    X_ls = .1493; %0.0591;
+    X_lr = .1104; %0.0705;
+    X_m = 2.3489; %2.3625;
+    v_dc = 1.5937; %1.9902; % dc-voltage [pu]
     std = 5e-4; % noise standard deviation
-    
+
     X_s = X_m + X_ls;
     X_r = X_m + X_lr;
     D = X_s*X_r - X_m^2;

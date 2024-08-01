@@ -1,5 +1,12 @@
 clear;
 
+% Add paths for used functions
+addpath('./Controllers/')
+addpath('./Numerical_Case_Studies/')
+addpath('./Setup/')
+addpath('./Tools/')
+addpath(genpath('./YALMIP/'))
+
 %% Setup
 % Create empty structs to avoid errors
 sys = struct();
@@ -12,11 +19,16 @@ ctrl3 = struct();
 % -------------------------------------------------------------------------
 % Quick setup of simulation parameters (set and remove whatever you want)
 % -------------------------------------------------------------------------
-ctrl0.node_limit = inf;
-ctrl2.type = 'ed & sdp guess';
-ctrl3.verbose = 1;
-ctrl3.type = 'ed guess + sdp';
+% ctrl0.node_limit = inf;
+% ctrl2.type = 'ed & sdp guess';
+% ctrl3.verbose = 1;
+% ctrl3.type = 'ed guess + sdp';
+ctrl0.deactivate = 1;
 ctrl2.deactivate = 1;
+ctrl3.deactivate = 1;
+
+sim.steps = {};
+sim.ramps = {};
 % -------------------------------------------------------------------------
 
 % Physical system
@@ -117,5 +129,8 @@ x_vec_sim(:,:,end) = [];
 
 %% Plotting
 Plotting
+
+%% Export data
+Export
 
 
