@@ -22,13 +22,14 @@ ctrl3 = struct();
 % ctrl0.node_limit = inf;
 % ctrl2.type = 'ed & sdp guess';
 % ctrl3.verbose = 1;
-% ctrl3.type = 'ed guess + sdp';
+ctrl3.type = 'ed guess + sdp';
 ctrl0.deactivate = 1;
+% ctrl1.deactivate = 1;
 ctrl2.deactivate = 1;
-ctrl3.deactivate = 1;
+% ctrl3.deactivate = 1;
 
-sim.steps = {};
-sim.ramps = {};
+% sim.steps = {};
+% sim.ramps = {};
 % -------------------------------------------------------------------------
 
 % Physical system
