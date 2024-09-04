@@ -79,7 +79,7 @@ function sim = SimulationSetup(sys, sim_pre, discretization)
     end
     
     % Set up random generator
-    rand(sim.seed);
+    rng(sim.seed);
     
     % Calculate discrete-time matrices
     % Specification of either exact euler or forward euler discretization
