@@ -7,6 +7,7 @@ addpath('./Setup/')
 addpath('./Tools/')
 addpath(genpath('./YALMIP/'))
 
+
 %% Setup
 % Create empty structs to avoid errors
 sys = struct();
@@ -27,6 +28,8 @@ ctrl0.deactivate = 1;
 % ctrl1.deactivate = 1;
 ctrl2.deactivate = 1;
 % ctrl3.deactivate = 1;
+ctrl1.node_limit = 300;
+ctrl3.node_limit = 300;
 
 % sim.steps = {};
 % sim.ramps = {};
@@ -131,7 +134,7 @@ x_vec_sim(:,:,end) = [];
 %% Plotting
 Plotting
 
-%% Export data
-Export
+% %% Export data
+% Export
 
 

@@ -151,7 +151,7 @@ function sdp = sdpSetup(ctrl)
     sdp.J0 = 0;
     for i = 2:3*N-2
         Y = [zeros(1,i-1), -1, zeros(1,2), 1, zeros(1, 3*N+1-(i+3)); zeros(3*N,3*N+1)];
-        sdp.J0 = sdp.J0 + ctrl.lam_u*norm(trace(Y*sdp.X),1);
+        sdp.J0 = sdp.J0 + ctrl.lam_u*abs(trace(Y*sdp.X));
     end
 
 end

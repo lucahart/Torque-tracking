@@ -169,27 +169,27 @@ grid on;
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Time
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-% nc = reshape([zeros(1,length(time_count)); time_count(1,:); zeros(1,length(time_count))],1,3*length(time_count));
-% tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-% nc2 = reshape([zeros(1,length(time_count)); time_count(2,:); zeros(1,length(time_count))],1,3*length(time_count));
-% tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-% nc3 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node_count))],1,3*length(node_count));
-% tc3 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
-% 
-% figure(8);
-% plot(t_ctrl_vec, ref(1,1:end-1),'k');
-% hold on;
-% plot(tc,nc,'r');
-% plot(tc2+ctrl0.T_s/6,nc2,'b');
-% plot(tc3+ctrl0.T_s*2/6, nc3/100,'g');
-% hold off;
-% 
-% title('Time')
-% xlim([0,t_max]);
-% xlabel('time [s]')
-% ylabel('Torque [pu] / # Time [s]')
-% legend('Torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
-% grid on;
+nc = reshape([zeros(1,length(time_count)); time_count(1,:); zeros(1,length(time_count))],1,3*length(time_count));
+tc = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+nc2 = reshape([zeros(1,length(time_count)); time_count(2,:); zeros(1,length(time_count))],1,3*length(time_count));
+tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+nc3 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node_count))],1,3*length(node_count));
+tc3 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
+
+figure(8);
+plot(t_ctrl_vec, ref(1,1:end-1),'k');
+hold on;
+plot(tc,nc,'r');
+plot(tc2+ctrl0.T_s/6,nc2,'b');
+plot(tc3+ctrl0.T_s*2/6, nc3/100,'g');
+hold off;
+
+title('Time')
+xlim([0,t_max]);
+xlabel('time [s]')
+ylabel('Torque [pu] / # Time [s]')
+legend('Torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
+grid on;
 
 
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -207,7 +207,7 @@ for k = 2:length(J_acc_0)
     J_acc_3(k) = J_acc_3(k) + J_acc_3(k-1);
 end
 
-figure(8);
+figure(9);
 plot(t_ctrl_vec, ref_ctrl,'k');
 hold on;
 plot(t_ctrl_vec,J_acc_0/100,'b');
@@ -229,7 +229,7 @@ grid on;
 
 K_inv = [1 0; -.5 sqrt(3)/2; -.5 -sqrt(3)/2];
 i_s = sys.X_r/sys.D*x_vec_sim(1:2,:,:) - sys.X_m/sys.D*x_vec_sim(3:4,:,:);
-figure(9);
+figure(10);
 plot(t_ctrl_vec, K_inv*squeeze(i_s(:,1,1:50:end-1)),'b');
 hold on;
 plot(t_ctrl_vec, K_inv*squeeze(i_s(:,2,1:50:end-1)),'r');

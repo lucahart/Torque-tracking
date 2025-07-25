@@ -14,11 +14,11 @@ ctrl2 = struct();
 ctrl0.node_limit = inf;
 ctrl1.node_limit = inf;
 ctrl2.node_limit = inf;
-sim.ramps = {};
-sim.steps = {};
-ctrl1.deactivate = 1;
-ctrl2.deactivate = 1;
-sim.x_0 = [.89 -.43 .82 -.52]'; % steady-state for T_ref = 1, Psi_ref = 1
+% sim.ramps = {};
+% sim.steps = {};
+% ctrl1.deactivate = 1;
+% ctrl2.deactivate = 1;
+% sim.x_0 = [.89 -.43 .82 -.52]'; % steady-state for T_ref = 1, Psi_ref = 1
 % -------------------------------------------------------------------------
 
 % Physical system

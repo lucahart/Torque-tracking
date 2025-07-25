@@ -21,9 +21,9 @@ function [u_hat] = run_sdp(ctrl, x, u_prev, ref)
     %% Cost function
     J = sdp.J0;
     % Add switching penalty to cost term
-    J = J + ctrl.lam_u*norm(trace(sdp.Y0a(u_prev)*X),1);
-    J = J + ctrl.lam_u*norm(trace(sdp.Y0b(u_prev)*X),1);
-    J = J + ctrl.lam_u*norm(trace(sdp.Y0c(u_prev)*X),1);
+    J = J + ctrl.lam_u*abs(trace(sdp.Y0a(u_prev)*X));
+    J = J + ctrl.lam_u*abs(trace(sdp.Y0b(u_prev)*X));
+    J = J + ctrl.lam_u*abs(trace(sdp.Y0c(u_prev)*X));
 
     % Add tracking penalties to cost term
     D = [];
@@ -34,7 +34,7 @@ function [u_hat] = run_sdp(ctrl, x, u_prev, ref)
             sqrt(1-ctrl.lam_T)*(Psi_ref^2 - trace(sdp.W(x,i)*X))
         ];
     end
-    J = J + norm(D,2)^2;
+    J = J + D'*D;
     
     %% Perform optimization
     assign(X,[1; ctrl.U_ed]*[1 ctrl.U_ed']);

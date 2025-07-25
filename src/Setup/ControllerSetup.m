@@ -24,7 +24,7 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     %     lam_T \in [0,1].
     %     Default: lam_T = .052
     %   ctrl.T_s: Sampling time of the controller [s].
-    %     Default: T_s = 100e-6
+    %     Default: T_s = 25e-6
     %   ctrl.N: Control horizon. For ctrl_type = '1-step' it always holds
     %     that N = 1. N is a positive integer otherwise.
     %     Default: N = 1 for ctrl_type='1-step' and N = 5 otherwise
@@ -102,7 +102,7 @@ function [ctrl, run_ctrl] = ControllerSetup(sys, ctrl_type, ctrl_pre)
     ctrl_nstep_SDP.lam_T = .052;
     ctrl_nstep_SDP.T_s = 25e-6;
     ctrl_nstep_SDP.N = 5;
-    ctrl_nstep_SDP.node_limit = 575; %150;
+    ctrl_nstep_SDP.node_limit = 500; %150;
     ctrl_nstep_SDP.estimate = 'all';
     ctrl_nstep_SDP.type = 'ed guess';
     ctrl_nstep_SDP.eps = 1e-12;
