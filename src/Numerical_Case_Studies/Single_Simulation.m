@@ -1,21 +1,9 @@
-clear;
-
-% Add paths for used functions
-addpath('./Controllers/')
-addpath('./Numerical_Case_Studies/')
-addpath('./Setup/')
-addpath('./Tools/')
-addpath(genpath('./YALMIP/'))
-
-
 %% Setup
 % Create empty structs to avoid errors
-sys = struct();
-sim = struct();
-ctrl0 = struct();
-ctrl1 = struct();
-ctrl2 = struct();
-ctrl3 = struct();
+ctrl0_pre = struct();
+ctrl1_pre = struct();
+ctrl2_pre = struct();
+ctrl3_pre = struct();
 
 % -------------------------------------------------------------------------
 % Quick setup of simulation parameters (set and remove whatever you want)
@@ -23,29 +11,24 @@ ctrl3 = struct();
 % ctrl0.node_limit = inf;
 % ctrl2.type = 'ed & sdp guess';
 % ctrl3.verbose = 1;
-ctrl3.type = 'ed guess + sdp';
-ctrl0.deactivate = 1;
+ctrl3_pre.type = 'ed guess + sdp';
+ctrl0_pre.deactivate = 1;
 % ctrl1.deactivate = 1;
-ctrl2.deactivate = 1;
+ctrl2_pre.deactivate = 1;
+ctrl3_pre.node_limit = 250;
+ctrl1_pre.node_limit = 2000;
 % ctrl3.deactivate = 1;
-ctrl1.node_limit = 1000;
-ctrl3.node_limit = 250;
 
-% sim.steps = {};
-% sim.ramps = {};
 % -------------------------------------------------------------------------
 
-% Physical system
-sys = SystemSetup(sys);
-
 % Simulation
-sim = SimulationSetup(sys, sim, 'exact');
+sim = SimulationSetup(sys, sim_pre, 'exact');
 
 % Controllers
-[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0); % controller without node limit, gives J_opt as reference
-[ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1); % controller with only ed guess
-[ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2); % controller with ed and sdp guess
-[ctrl3, run_ctrl3] = ControllerSetup(sys, 'n-step-SDP', ctrl3); % controller with ed guess and sdp
+[ctrl0, run_ctrl0] = ControllerSetup(sys, 'n-step-SDP', ctrl0_pre); % controller without node limit, gives J_opt as reference
+[ctrl1, run_ctrl1] = ControllerSetup(sys, 'n-step-SDP', ctrl1_pre); % controller with only ed guess
+[ctrl2, run_ctrl2] = ControllerSetup(sys, 'n-step-SDP', ctrl2_pre); % controller with ed and sdp guess
+[ctrl3, run_ctrl3] = ControllerSetup(sys, 'n-step-SDP', ctrl3_pre); % controller with ed guess and sdp
 n_costs  = ctrl0.n_costs + ctrl1.n_costs + ctrl2.n_costs + ctrl3.n_costs; % required length of cost term
 n_c = 4; % number of controllers that are simulated
 
@@ -65,19 +48,7 @@ B_sim = [
     sim.B_4;
 ];
 % Reference
-ref = generate_reference(sim.steps, sim.ramps, n_controller_samples, ...
-    int32(1/(ctrl0.T_s*sys.f_r*sys.f_base)));
-
-%% Variables for plotting
-% Sampled with controller sampling time
-u_vec = NaN(3, n_c, n_controller_samples);
-iter_count = NaN(n_c, n_controller_samples);
-node_count = NaN(n_c, n_controller_samples);
-time_count = NaN(n_c, n_controller_samples);
-cost_vec = NaN(n_costs, n_controller_samples);
-
-% Sampled with simulation sampling time
-x_vec_sim = nan*ones(4, n_c, n_simulation_samples);
+ref = generate_reference(sim.steps, sim.ramps, n_controller_samples);
 
 
 %% Physical system simulation
@@ -129,12 +100,5 @@ t_sim = toc(t_sim);
 
 % Remove last state to keep the same length as all other vectors
 x_vec_sim(:,:,end) = [];
-
-
-%% Plotting
-Plotting
-
-% %% Export data
-% Export
 
 

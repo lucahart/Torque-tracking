@@ -19,7 +19,6 @@ psi_s_ctrl = x_vec_ctrl(1:2,:,:);
 psi_r_ctrl = x_vec_ctrl(3:4,:,:);
 ref_ctrl = ref(1,1:end-1);
 
-
 % *************************************************************************
 %% Plotting
 % *************************************************************************
@@ -86,8 +85,8 @@ hold off;
 
 title('Torque');
 legend('reference', 'opt', 'limit', 'sdp', 'Location','southwest');%'opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','southwest');
-ylim([-1,1.3]); % ylim([-2,1.3]);
-xlim([.65,.75]); % xlim([0,t_max]);
+ylim([-1.3,1.3]); % ylim([-1,1.3]);
+xlim([0,t_max]); % xlim([.65,.75]);
 xlabel('time [s]');
 ylabel('torque [pu]');
 grid on;
@@ -109,8 +108,8 @@ hold off;
 
 title('Absolute stator flux');
 legend('Flux reference','opt', ctrl1.type, ctrl3.type, 'Location','southwest');
-ylim([.8,1.2]); %ylim([0,1.2]);
-xlim([.65,.76]); %xlim([0,t_max]);
+ylim([.8,1.2]); % ylim([.8,1.2]);
+xlim([0,t_max]); % xlim([.65,.76]);
 grid on;
 
 
@@ -153,16 +152,17 @@ figure(7);
 plot(t_ctrl_vec, ref(1,1:end-1),'k');
 hold on;
 % plot(tc,nc0/1000,'b');
-plot(tc+ctrl0.T_s/6, nc2/1000,'r');
-plot(tc+ctrl0.T_s*2/6, nc0/1000,'b');
-plot(tc+ctrl0.T_s*3/6, nc1/1000,'g');
+plot(tc+ctrl0.T_s/6, nc1/1000,'r');
+% plot(tc+ctrl0.T_s*2/6, nc0/1000,'b');
+plot(tc+ctrl0.T_s*3/6, nc3/1000,'g');
 hold off;
 
 title('Nodes')
 xlim([.01,t_max]);
 xlabel('time [s]')
 ylabel('torque [pu] / # nodes [10^3]')
-legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','northwest');
+% legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','northwest');
+legend('Torque reference', ctrl1.type, ctrl3.type, 'Location', 'northwest');
 grid on;
 
 
@@ -177,11 +177,11 @@ nc3 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node
 tc3 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 
 figure(8);
-plot(t_ctrl_vec, ref(1,1:end-1),'k');
+plot(t_ctrl_vec, ref(1,1:end-1)/100,'k');
 hold on;
 plot(tc,nc,'r');
 plot(tc2+ctrl0.T_s/6,nc2,'b');
-plot(tc3+ctrl0.T_s*2/6, nc3/100,'g');
+plot(tc3+ctrl0.T_s*2/6, nc3,'g');
 hold off;
 
 title('Time')
@@ -277,7 +277,7 @@ Psi_sim = squeeze(vecnorm(psi_s_sim,2,1));
 fprintf(['Absolute flux rms error (','opt','):      %.4fe-3 \n'], ...
     norm(Psi_sim(1,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 fprintf(['Absolute flux rms error (',ctrl1.type,'): %.4fe-3 \n'], ...
-    norm(Psi_sim(2,:).^2-ref_sim(2,:).^2,2)/sqrt(length(Psi_sim))*1e3);
+    norm(Psi_sim(2,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 fprintf(['Absolute flux rms error (',ctrl2.type,'): %.4fe-3 \n'], ...
     norm(Psi_sim(3,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 fprintf(['Absolute flux rms error (',ctrl3.type,'): %.4fe-3 \n\n'], ...

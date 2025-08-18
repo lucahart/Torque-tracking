@@ -1,0 +1,8 @@
+
+
+Installation Instructions
+- Install MATLAB
+- Install SCS for MATLAB, see installation instructions here: https://www.cvxgrp.org/scs/install/matlab.html#matlab-install
+- Install Yalmip, see installation instructions here: https://yalmip.github.io/tutorial/installation/
+- Clone the repository
+
