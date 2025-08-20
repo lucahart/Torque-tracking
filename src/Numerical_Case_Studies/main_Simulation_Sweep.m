@@ -16,7 +16,7 @@ sim_pre = struct();
 % Setup simulation parameters (Can Optionally be changed)
 % -------------------------------------------------------------------------
 % We will run n_sims simulations with n_steps steps as specified:
-n_sims = 3;
+n_sims = 2;
 n_steps = 10;
 
 % Step lengths are sampled from a uniform distribution on this interval:
@@ -50,6 +50,10 @@ steps_pre = repmat({{}},1,n_sims);
 % Set the measurement length for computing the error after each step
 measurement_length = 5e-3;
 
+% Set b&b node limits to iterate over
+branch_and_bound_node_limits = [inf,250,500,750,1000,1500,2000];
+n_node_limits = length(branch_and_bound_node_limits);
+
 
 %% Precalculations
 
@@ -70,50 +74,58 @@ end
 
 
 %% Variables to store all simulation results
-u_sims = cell(n_sims,1);
-iter_count_sims = cell(n_sims,1);
-node_count_sims = cell(n_sims,1);
-time_count_sims = cell(n_sims,1);
-cost_vec_sims = cell(n_sims,1);
-x_vec_sims = cell(n_sims,1);
-step_times_sims = cell(n_sims,1);
-ref_sims = cell(n_sims,1);
+u_sims = cell(n_sims,n_node_limits);
+iter_count_sims = cell(n_sims,n_node_limits);
+node_count_sims = cell(n_sims,n_node_limits);
+time_count_sims = cell(n_sims,n_node_limits);
+cost_vec_sims = cell(n_sims,n_node_limits);
+x_vec_sims = cell(n_sims,n_node_limits);
+step_times_sims = cell(n_sims,n_node_limits);
+ref_sims = cell(n_sims,n_node_limits);
 
 
 %% Run simulations
-for sim_cnt = 1:n_sims
+bnb_sdp_deactivation = 0;
+for node_limit_cnt = 1:n_node_limits
+    for sim_cnt = 1:n_sims
+    
+        branch_and_bound_node_limit = branch_and_bound_node_limits(node_limit_cnt);
+        sim_pre.ramps = {};
+        sim_pre.steps = cellfun(@(c) c{1}, steps_pre{sim_cnt}, 'UniformOutput', false);
+        
+        
+        %% Run single simulation
+        
+        Single_Simulation
+        
+        % Store simulation results 
+        u_sims{sim_cnt,node_limit_cnt} = u_vec;
+        iter_count_sims{sim_cnt,node_limit_cnt} = iter_count;
+        node_count_sims{sim_cnt,node_limit_cnt} = node_count;
+        time_count_sims{sim_cnt,node_limit_cnt} = time_count;
+        cost_vec_sims{sim_cnt,node_limit_cnt} = cost_vec;
+        x_vec_sims{sim_cnt,node_limit_cnt} = x_vec_sim;
+        step_times_sims{sim_cnt,node_limit_cnt} = step_times;
+        ref_sims{sim_cnt,node_limit_cnt} = ref;
+    
+    end
 
-    sim_pre.ramps = {};
-    sim_pre.steps = cellfun(@(c) c{1}, steps_pre{sim_cnt}, 'UniformOutput', false);
-    
-    
-    %% Run single simulation
-    
-    Single_Simulation
-    
-    % Store simulation results 
-    u_sims{sim_cnt} = u_vec;
-    iter_count_sims{sim_cnt} = iter_count;
-    node_count_sims{sim_cnt} = node_count;
-    time_count_sims{sim_cnt} = time_count;
-    cost_vec_sims{sim_cnt} = cost_vec;
-    x_vec_sims{sim_cnt} = x_vec_sim;
-    step_times_sims{sim_cnt} = step_times;
-    ref_sims{sim_cnt} = ref;
-
+    % b&b+sdp needs to run only once and is deactivated afterwards
+    bnb_sdp_deactivation = 1;
 end
 
 %% Plotting
-show_simulation = 3;
+show_simulation = 1;
+show_node_count = 1;
 
-u_vec = u_sims{show_simulation};
-iter_count = iter_count_sims{show_simulation};
-node_count = node_count_sims{show_simulation};
-time_count = time_count_sims{show_simulation};
-cost_vec = cost_vec_sims{show_simulation};
-x_vec_sim = x_vec_sims{show_simulation};
+u_vec = u_sims{show_simulation,show_node_count};
+iter_count = iter_count_sims{show_simulation,show_node_count};
+node_count = node_count_sims{show_simulation,show_node_count};
+time_count = time_count_sims{show_simulation,show_node_count};
+cost_vec = cost_vec_sims{show_simulation,show_node_count};
+x_vec_sim = x_vec_sims{show_simulation,show_node_count};
 steps = cellfun(@(c) c{1}, steps_pre{show_simulation}, 'UniformOutput', false);
-ref = ref_sims{show_simulation};
+ref = ref_sims{show_simulation,show_node_count};
 
 Plotting
 
