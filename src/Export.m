@@ -12,6 +12,6 @@ Psi_sim = squeeze(vecnorm(psi_s_sim,2,1));
 
 varNames = {'Psi_sref','Psi_s1','Psi_s2','Psi_s3','t'};
 tab=table(ref(2,1:end-1)', Psi_sim(1,1:50:end)', Psi_sim(2,1:50:end)', Psi_sim(4,1:50:end)', t_sim_vec(1:50:end)','VariableNames',varNames);
-writetable(tab(1:10:end,:),'stator_flox.txt','Delimiter',' ');
+writetable(tab(1:10:end,:),'stator_flux.txt','Delimiter',' ');
 
 

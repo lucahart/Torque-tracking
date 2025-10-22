@@ -16,7 +16,7 @@ sim_pre = struct();
 % Setup simulation parameters (Can Optionally be changed)
 % -------------------------------------------------------------------------
 % We will run n_sims simulations with n_steps steps as specified:
-n_sims = 2;
+n_sims = 10;
 n_steps = 10;
 
 % Step lengths are sampled from a uniform distribution on this interval:
@@ -35,7 +35,7 @@ rng(random_seed);
 sys = SystemSetup(sys_pre);
 
 % The simulation length must be specified
-sim_pre.n_fundamentals = 10;
+sim_pre.n_fundamentals = 20;
 
 %
 step_time_min = .3;
@@ -51,7 +51,7 @@ steps_pre = repmat({{}},1,n_sims);
 measurement_length = 5e-3;
 
 % Set b&b node limits to iterate over
-branch_and_bound_node_limits = [inf,250,500,750,1000,1500,2000];
+branch_and_bound_node_limits = [inf,250,500,750,1000,1500,2000,5000,10000,20000];
 n_node_limits = length(branch_and_bound_node_limits);
 
 
@@ -87,6 +87,7 @@ ref_sims = cell(n_sims,n_node_limits);
 %% Run simulations
 bnb_sdp_deactivation = 0;
 for node_limit_cnt = 1:n_node_limits
+    node_limit_t0 = tic;
     for sim_cnt = 1:n_sims
     
         branch_and_bound_node_limit = branch_and_bound_node_limits(node_limit_cnt);
@@ -109,6 +110,12 @@ for node_limit_cnt = 1:n_node_limits
         ref_sims{sim_cnt,node_limit_cnt} = ref;
     
     end
+    node_limit_sim_time = toc(node_limit_t0);
+
+    % Print Progress
+    fprintf("Finished node limit " + num2str(node_limit_cnt) + " of " ...
+        + num2str(n_node_limits) + " after " + num2str(node_limit_sim_time) ...
+        + "s\n");
 
     % b&b+sdp needs to run only once and is deactivated afterwards
     bnb_sdp_deactivation = 1;
@@ -130,3 +137,5 @@ ref = ref_sims{show_simulation,show_node_count};
 Plotting
 
 PlottingAllSims
+
+

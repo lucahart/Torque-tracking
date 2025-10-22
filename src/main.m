@@ -29,7 +29,6 @@ ctrl3.type = 'ed guess + sdp';
 ctrl2.deactivate = 1;
 % ctrl3.deactivate = 1;
 ctrl1.node_limit = 500;
-ctrl3.node_limit = 250;
 
 % sim.steps = {};
 % sim.ramps = {};
