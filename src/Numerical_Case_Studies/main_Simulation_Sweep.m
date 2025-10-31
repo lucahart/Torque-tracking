@@ -1,10 +1,15 @@
 clear;
 
+if (exist('scs','file') ~= 2)
+    error("SCS could not be found.");
+end
+
 % Add paths for used functions
 addpath('./Controllers/')
 addpath('./Numerical_Case_Studies/')
 addpath('./Setup/')
 addpath('./Tools/')
+addpath('./Plotting')
 addpath(genpath('./YALMIP/'))
 
 
