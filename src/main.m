@@ -26,17 +26,10 @@ ctrl3 = struct();
 % Quick setup of simulation parameters (set and remove whatever you want)
 % -------------------------------------------------------------------------
 ctrl0.node_limit = inf;
-% ctrl2.type = 'ed & sdp guess';
-% ctrl3.verbose = 1;
-ctrl3.type = 'ed guess + sdp';
-% ctrl0.deactivate = 1;
-% ctrl1.deactivate = 1;
-ctrl2.deactivate = 1;
-% ctrl3.deactivate = 1;
 ctrl1.node_limit = 500;
+ctrl2.deactivate = 1;
+ctrl3.type = 'ed guess + sdp';
 
-% sim.steps = {};
-% sim.ramps = {};
 % -------------------------------------------------------------------------
 
 % Physical system

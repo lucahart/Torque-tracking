@@ -228,7 +228,7 @@ grid on;
 % Currents
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-if 0
+
 K_inv = [1 0; -.5 sqrt(3)/2; -.5 -sqrt(3)/2];
 i_s = sys.X_r/sys.D*x_vec_sim(1:2,:,:) - sys.X_m/sys.D*x_vec_sim(3:4,:,:);
 figure(10);
@@ -239,7 +239,11 @@ plot(t_ctrl_vec, K_inv*squeeze(i_s(:,4,1:50:end-1)),'g');
 hold off;
 
 grid on;
-end
+title("Stator Currents")
+xlabel('time [s]')
+ylabel('Currents [pu]')
+xlim([0,1])
+legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','north');
 
 
 % *************************************************************************
