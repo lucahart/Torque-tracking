@@ -20,7 +20,7 @@ You can download your own version of [YALMIP-R20210331 here](https://github.com/
 
 ## Citation
 <!-- You can find a free-access version of our paper on [arXiv](https://arxiv.org/abs/2412.11666). -->
-If using this code for academic work, cite us. Here are the Text and BibTex cytations:
+If using this code for academic work, please cite us. Here are the Text and BibTex cytations:
 ```Text Citation
 Luca M. Hartmann, Orcun Karaca, Tinus Dorfling, Tobias Geyer, Adam Kurpisz,
 "On the SDP Relaxation of Direct Torque Finite Control Set Model Predictive Control,"
