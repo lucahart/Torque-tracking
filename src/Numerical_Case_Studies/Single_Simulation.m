@@ -8,17 +8,13 @@ ctrl3_pre = struct();
 % -------------------------------------------------------------------------
 % Quick setup of simulation parameters (set and remove whatever you want)
 % -------------------------------------------------------------------------
-% ctrl0.node_limit = inf;
-% ctrl2.type = 'ed & sdp guess';
-% ctrl3.verbose = 1;
+
 ctrl3_pre.type = 'ed guess + sdp';
 ctrl0_pre.deactivate = 1;
-% ctrl1.deactivate = 1;
 ctrl1_pre.node_limit = branch_and_bound_node_limit;
 ctrl3_pre.node_limit = 250;
 ctrl2_pre.deactivate = 1;
 ctrl3_pre.deactivate = bnb_sdp_deactivation;
-% ctrl3.deactivate = 1;
 
 % -------------------------------------------------------------------------
 

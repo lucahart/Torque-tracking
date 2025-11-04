@@ -84,7 +84,7 @@ plot(t_sim_vec, T_sim(4,:), 'g');
 hold off;
 
 title('Torque');
-legend('reference', 'opt', 'limit', 'sdp', 'Location','southwest');%'opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','southwest');
+legend('reference', 'opt', ctrl1.type, ctrl3.type, 'Location','southwest');%'opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','southwest');
 ylim([-1.3,1.3]); % ylim([-1,1.3]);
 xlim([0,t_max]); % xlim([.65,.75]);
 xlabel('time [s]');
@@ -106,8 +106,10 @@ plot(t_sim_vec, Psi_sim(2,:), 'r');
 plot(t_sim_vec, Psi_sim(4,:), 'g');
 hold off;
 
-title('Absolute stator flux');
-legend('Flux reference','opt', ctrl1.type, ctrl3.type, 'Location','southwest');
+title('Absolute Stator Flux');
+xlabel('time [s]');
+ylabel('absolute stator flux [pu]');
+legend('flux reference','opt', ctrl1.type, ctrl3.type, 'Location','southwest');
 ylim([.8,1.2]); % ylim([.8,1.2]);
 xlim([0,t_max]); % xlim([.65,.76]);
 grid on;
@@ -122,7 +124,7 @@ ic2 = reshape([zeros(1,length(iter_count)); iter_count(2,:); zeros(1,length(iter
 tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(iter_count));
 ic3 = reshape([zeros(1,length(iter_count)); iter_count(3,:); zeros(1,length(iter_count))],1,3*length(iter_count));
 tc3 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(iter_count));
-
+if 0
 figure(6);
 plot(t_ctrl_vec, ref(1,1:end-1),'k');
 hold on;
@@ -134,10 +136,10 @@ hold off;
 title('Solution Updates')
 xlim([0,t_max]);
 xlabel('time [s]')
-ylabel('Torque [pu] / # Iterations [10]')
-legend('Torque reference','# Iterations opt','# Iterations ed','# Iterations sdp');
+ylabel('torque [pu] / # iterations [10]')
+legend('torque reference','# iterations opt','# iterations ed','# iterations sdp');
 grid on;
-
+end
 
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Visited parent nodes
@@ -157,12 +159,12 @@ plot(tc+ctrl0.T_s/6, nc1/1000,'r');
 plot(tc+ctrl0.T_s*3/6, nc3/1000,'g');
 hold off;
 
-title('Nodes')
+title('Number of Parent Nodes Visited')
 xlim([.01,t_max]);
 xlabel('time [s]')
 ylabel('torque [pu] / # nodes [10^3]')
 % legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','northwest');
-legend('Torque reference', ctrl1.type, ctrl3.type, 'Location', 'northwest');
+legend('torque reference', ctrl1.type, ctrl3.type, 'Location', 'northwest');
 grid on;
 
 
@@ -176,6 +178,7 @@ tc2 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 nc3 = reshape([zeros(1,length(node_count)); node_count(3,:); zeros(1,length(node_count))],1,3*length(node_count));
 tc3 = reshape([t_ctrl_vec;t_ctrl_vec;t_ctrl_vec],1,3*length(t_ctrl_vec));
 
+if 0
 figure(8);
 plot(t_ctrl_vec, ref(1,1:end-1)/100,'k');
 hold on;
@@ -187,10 +190,10 @@ hold off;
 title('Time')
 xlim([0,t_max]);
 xlabel('time [s]')
-ylabel('Torque [pu] / # Time [s]')
-legend('Torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
+ylabel('torque [pu] / # time [s]')
+legend('torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
 grid on;
-
+end
 
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Accumulated cost
@@ -219,24 +222,31 @@ hold off;
 title('Accumulated Cost')
 xlim([0,t_max]);
 xlabel('time [s]')
-ylabel('Torque [pu] / Accumulated Cost [10]')
-legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','northwest');
+ylabel('torque [pu] / accumulated cost [10]')
+legend('torque reference','opt', ctrl1.type, ctrl3.type, 'Location','northwest');
 grid on;
 
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 % Currents
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+
 K_inv = [1 0; -.5 sqrt(3)/2; -.5 -sqrt(3)/2];
 i_s = sys.X_r/sys.D*x_vec_sim(1:2,:,:) - sys.X_m/sys.D*x_vec_sim(3:4,:,:);
 figure(10);
-plot(t_ctrl_vec, K_inv*squeeze(i_s(:,1,1:50:end-1)),'b');
+c0 = plot(t_ctrl_vec, K_inv*squeeze(i_s(:,1,1:50:end-1)),'b');
 hold on;
-plot(t_ctrl_vec, K_inv*squeeze(i_s(:,2,1:50:end-1)),'r');
-plot(t_ctrl_vec, K_inv*squeeze(i_s(:,4,1:50:end-1)),'g');
+c1 = plot(t_ctrl_vec, K_inv*squeeze(i_s(:,2,1:50:end-1)),'r');
+c3 = plot(t_ctrl_vec, K_inv*squeeze(i_s(:,4,1:50:end-1)),'g');
 hold off;
 
 grid on;
+title("Stator Currents")
+xlabel('time [s]')
+ylabel('currents [pu]')
+xlim([0,1])
+legend([c0(1), c1(1), c3(1)], ...
+    'opt', ctrl2.type, ctrl3.type, 'Location','north');
 
 
 % *************************************************************************
@@ -252,13 +262,17 @@ del_u0 = abs([sim.u_0 squeeze(u_vec(:,1,1:end-1))] - squeeze(u_vec(:,1,:)));
 f_sw0 = 1/(12*t_max)*sum(del_u0, 'all');
 del_u1 = abs([sim.u_0 squeeze(u_vec(:,2,1:end-1))] - squeeze(u_vec(:,2,:)));
 f_sw1 = 1/(12*t_max)*sum(del_u1, 'all');
+if ~ctrl2.deactivate
 del_u2 = abs([sim.u_0 squeeze(u_vec(:,3,1:end-1))] - squeeze(u_vec(:,3,:)));
 f_sw2 = 1/(12*t_max)*sum(del_u2, 'all');
+end
 del_u3 = abs([sim.u_0 squeeze(u_vec(:,4,1:end-1))] - squeeze(u_vec(:,4,:)));
 f_sw3 = 1/(12*t_max)*sum(del_u3, 'all');
 fprintf(['Average switching frequency (','opt','):      %.2fHz \n'], f_sw0);
 fprintf(['Average switching frequency (',ctrl1.type,'): %.2fHz \n'], f_sw1);
+if ~ctrl2.deactivate
 fprintf(['Average switching frequency (',ctrl2.type,'): %.2fHz \n'], f_sw2);
+end
 fprintf(['Average switching frequency (',ctrl3.type,'): %.2fHz \n\n'], f_sw3);
 
 % Print torque rms error
@@ -267,8 +281,10 @@ fprintf(['Torque rms error (','opt','):      %.4fe-3 \n'], ...
     norm(T_sim(1,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
 fprintf(['Torque rms error (',ctrl1.type,'): %.4fe-3 \n'], ...
     norm(T_sim(2,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
+if ~ctrl2.deactivate
 fprintf(['Torque rms error (',ctrl2.type,'): %.4fe-3 \n'], ...
     norm(T_sim(3,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
+end
 fprintf(['Torque rms error (',ctrl3.type,'): %.4fe-3 \n\n'], ...
     norm(T_sim(4,:)-ref_sim(1,:),2)/sqrt(length(T_sim))*1e3);
 
@@ -278,24 +294,26 @@ fprintf(['Absolute flux rms error (','opt','):      %.4fe-3 \n'], ...
     norm(Psi_sim(1,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 fprintf(['Absolute flux rms error (',ctrl1.type,'): %.4fe-3 \n'], ...
     norm(Psi_sim(2,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
+if ~ctrl2.deactivate
 fprintf(['Absolute flux rms error (',ctrl2.type,'): %.4fe-3 \n'], ...
     norm(Psi_sim(3,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
+end
 fprintf(['Absolute flux rms error (',ctrl3.type,'): %.4fe-3 \n\n'], ...
     norm(Psi_sim(4,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 
-% Print traversed nodes
-fprintf('Traversed nodes with opt guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
-    mean(node_count(2,2e4:end)), ...
-    std(node_count(2,2e4:end)), ...
-    max(node_count(2,2e4:end)));
-fprintf('Traversed nodes with ed. guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
-    mean(node_count(1,2e4:end)), ...
-    std(node_count(1,2e4:end)), ...
-    max(node_count(1,2e4:end)));
-fprintf('Traversed nodes with bad guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
-    mean(node_count(3,2e4:end)), ...
-    std(node_count(3,2e4:end)), ...
-    max(node_count(3,2e4:end)));
+% % Print traversed nodes
+% fprintf('Traversed nodes with opt guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
+%     mean(node_count(2,2e4:end)), ...
+%     std(node_count(2,2e4:end)), ...
+%     max(node_count(2,2e4:end)));
+% fprintf('Traversed nodes with ed. guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
+%     mean(node_count(1,2e4:end)), ...
+%     std(node_count(1,2e4:end)), ...
+%     max(node_count(1,2e4:end)));
+% fprintf('Traversed nodes with bad guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
+%     mean(node_count(3,2e4:end)), ...
+%     std(node_count(3,2e4:end)), ...
+%     max(node_count(3,2e4:end)));
 
 % % Current TDD
 % i_s = sys.X_r/sys.D*x_vec_sim(1:2,:,:) - sys.X_m/sys.D*x_vec_sim(3:4,:,:);
