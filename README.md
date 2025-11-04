@@ -5,9 +5,9 @@ It includes a simulation environment for an electric motor, multiple controler c
 and simulation scenarios as discussed in our paper.
 
 ## Installation
-This code uses the [SCS optimizer](https://www.cvxgrp.org/scs/) and the [Yalmip library](https://yalmip.github.io/tutorial/installation/). 
+This code uses the [SCS optimizer, version 3.2.9](https://www.cvxgrp.org/scs/) and the [Yalmip library, version R20210331](https://github.com/yalmip/YALMIP/releases/tag/R20210331). 
 Their respective installation instructions can be found under the provided links. 
-Please make sure that both backages are added to the path and up-to-date before running this code.
+Please make sure that both backages are added to the path and have the correct versions before running this code.
 
 ## Citation
 <!-- You can find a free-access version of our paper on [arXiv](https://arxiv.org/abs/2412.11666). -->

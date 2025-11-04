@@ -8,9 +8,8 @@ end
 addpath('./Controllers/')
 addpath('./Numerical_Case_Studies/')
 addpath('./Setup/')
-addpath('./Tools/')
 addpath('./Plotting')
-addpath(genpath('./YALMIP/'))
+addpath('./Tools/','-begin')
 
 
 %% Setup
