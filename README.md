@@ -9,16 +9,14 @@ This code uses the [SCS optimizer, version 3.2.9](https://www.cvxgrp.org/scs/).
 Its installation instructions can be found under the provided link. 
 Please make sure that the package is added to the MATLAB path and have the correct version is installed before running this code. 
 
-Run ```Setup.m``` when first opening the repository. 
-You can also start by directly running the Simulation files described below.
-After running Setup.m, you can optionally run ```savepath``` to keep this repository on your MATLAB path for future runs. 
-However, we do not recommend doing so, as the local version of YALMIP might interfere with other YALMIP versions.
-
 **Note:** We included YALMIP-R20210331 in this repo for ease of use. 
-Due to compatibility issues with the latest version of SCS, we changed the methods ```extras/sdpsettings``` and ```solvers/callscs```. 
+Due to compatibility issues with the latest version of SCS, we keep a changed version of YALMIP-R20210331 in the git repository. 
+*We do not recommend loading any other version of YALMIP.* 
+<!-- Due to compatibility issues with the latest version of SCS, we changed the methods ```extras/sdpsettings``` and ```solvers/callscs```. 
 These changed methods can be found under ```src/Tools```, which is added to the MATLAB path at every execution, such that the outdated YALMIP functions are shadowed. 
-This allows the usage of the included YALMIP-R20210331, as well as YALMIP-R20210331 in a different repository. You can optionally download your own version of [YALMIP-R20210331 here](https://github.com/yalmip/YALMIP/releases/tag/R20210331). 
-*If YALMIP is hosted in a separate repository, make sure you are using the correct version, R20210331.*
+This allows the usage of the included YALMIP-R20210331, as well as YALMIP-R20210331 in a different repository.
+You can download your own version of [YALMIP-R20210331 here](https://github.com/yalmip/YALMIP/releases/tag/R20210331). 
+*If YALMIP is hosted in a separate repository, make sure you are using the correct version, R20210331.* -->
 
 ## Citation
 <!-- You can find a free-access version of our paper on [arXiv](https://arxiv.org/abs/2412.11666). -->

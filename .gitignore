@@ -16,7 +16,7 @@
 *.lnk
 
 % Folders that should not be under version control
-src/YALMIP/*
+% src/YALMIP/*
 src/YALMIP_Practice/*
 src/yalmip.zip
 */slprj/*

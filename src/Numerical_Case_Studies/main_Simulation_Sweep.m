@@ -1,7 +1,17 @@
 clear;
 
-addpath('../..'); % add path to Setup.m if not yet executed
-Setup; % run path setup
+% Check if SCS is available
+if (exist('scs','file') ~= 2)
+    error("SCS could not be found.");
+end
+
+% Add paths
+addpath('./Controllers/')
+addpath('./Numerical_Case_Studies/')
+addpath('./Setup/')
+addpath('./Plotting/')
+addpath('./Tools/')
+addpath(genpath('./YALMIP/'))
 
 
 %% Setup
@@ -12,8 +22,8 @@ sim_pre = struct();
 % Setup simulation parameters (Can Optionally be changed)
 % -------------------------------------------------------------------------
 % We will run n_sims simulations with n_steps steps as specified:
-n_sims = 10;
-n_steps = 10;
+n_sims = 1;
+n_steps = 5;
 
 % Step lengths are sampled from a uniform distribution on this interval:
 step_interval = [.5, 1.5]; % in [pu]

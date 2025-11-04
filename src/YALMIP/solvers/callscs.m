@@ -19,7 +19,7 @@ data.A = -model.F_struc(:,2:end);
 data.b = full(model.F_struc(:,1));
 data.c = full(model.c);
 cones = [];
-cones.f = model.K.f;
+cones.z = model.K.f;
 cones.l = model.K.l;
 cones.q = model.K.q;
 cones.s = model.K.s;
@@ -44,12 +44,12 @@ end
 
 % Extract lower diagonal form for new SCS format
 if ~isempty(cones.s) && any(cones.s)
-    sdpA = data.A(1+cones.l + cones.f+sum(cones.q):end,:);
-    sdpb = data.b(1+cones.l + cones.f+sum(cones.q):end,:);
+    sdpA = data.A(1+cones.l + cones.z+sum(cones.q):end,:);
+    sdpb = data.b(1+cones.l + cones.z+sum(cones.q):end,:);
     expA = data.A(end-3*cones.ep+1:end,:);
     expb = data.b(end-3*cones.ep+1:end,:);
-    data.A = data.A(1:cones.l + cones.f+sum(cones.q),:);    
-    data.b = data.b(1:cones.l + cones.f+sum(cones.q),:);
+    data.A = data.A(1:cones.l + cones.z+sum(cones.q),:);    
+    data.b = data.b(1:cones.l + cones.z+sum(cones.q),:);
     top = 1;
     for i = 1:length(cones.s)
         A = sdpA(top:top + cones.s(i)^2-1,:);
@@ -96,9 +96,9 @@ if ~isempty(model.evalMap)
     Dual = [];
 else
     % Map to full format from tril
-    Dual = y_s(1:cones.f+cones.l+sum(cones.q));
+    Dual = y_s(1:cones.z+cones.l+sum(cones.q));
     if ~isempty(cones.s) && any(cones.s)        
-        top = 1 + cones.f + cones.l + sum(cones.q);
+        top = 1 + cones.z + cones.l + sum(cones.q);
         for i = 1:length(cones.s)
             n = cones.s(i);
             sdpdual = y_s(top:top + n*(n+1)/2-1,:);

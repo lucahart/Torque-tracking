@@ -1,7 +1,18 @@
 clear;
 
-addpath('../..'); % add path to Setup.m if not yet executed
-Setup; % run path setup
+% Check if SCS is available
+if (exist('scs','file') ~= 2)
+    error("SCS could not be found.");
+end
+
+% Add paths
+addpath('./Controllers/')
+addpath('./Numerical_Case_Studies/')
+addpath('./Setup/')
+addpath('./Plotting/')
+addpath('./Tools/')
+addpath(genpath('./YALMIP/'))
+
 
 %% Setup
 % Create empty structs to avoid errors

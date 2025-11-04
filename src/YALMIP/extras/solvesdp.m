@@ -243,6 +243,13 @@ if isequal(options.solver,'moment')
     return
 end
 
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+% DID WE SELECT THE SCS SOLVER
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+if isequal(options.solver,'scs')
+    %
+end
+
 % ******************************************
 % COMPILE IN GENERALIZED YALMIP FORMAT
 % ******************************************
