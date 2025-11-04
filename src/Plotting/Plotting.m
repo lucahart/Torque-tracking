@@ -84,7 +84,7 @@ plot(t_sim_vec, T_sim(4,:), 'g');
 hold off;
 
 title('Torque');
-legend('reference', 'opt', 'limit', 'sdp', 'Location','southwest');%'opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','southwest');
+legend('reference', 'opt', ctrl1.type, ctrl3.type, 'Location','southwest');%'opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','southwest');
 ylim([-1.3,1.3]); % ylim([-1,1.3]);
 xlim([0,t_max]); % xlim([.65,.75]);
 xlabel('time [s]');
@@ -106,8 +106,10 @@ plot(t_sim_vec, Psi_sim(2,:), 'r');
 plot(t_sim_vec, Psi_sim(4,:), 'g');
 hold off;
 
-title('Absolute stator flux');
-legend('Flux reference','opt', ctrl1.type, ctrl3.type, 'Location','southwest');
+title('Absolute Stator Flux');
+xlabel('time [s]');
+ylabel('absolute stator flux [pu]');
+legend('flux reference','opt', ctrl1.type, ctrl3.type, 'Location','southwest');
 ylim([.8,1.2]); % ylim([.8,1.2]);
 xlim([0,t_max]); % xlim([.65,.76]);
 grid on;
@@ -134,8 +136,8 @@ hold off;
 title('Solution Updates')
 xlim([0,t_max]);
 xlabel('time [s]')
-ylabel('Torque [pu] / # Iterations [10]')
-legend('Torque reference','# Iterations opt','# Iterations ed','# Iterations sdp');
+ylabel('torque [pu] / # iterations [10]')
+legend('torque reference','# iterations opt','# iterations ed','# iterations sdp');
 grid on;
 end
 
@@ -157,12 +159,12 @@ plot(tc+ctrl0.T_s/6, nc1/1000,'r');
 plot(tc+ctrl0.T_s*3/6, nc3/1000,'g');
 hold off;
 
-title('Parent nodes visited')
+title('Number of Parent Nodes Visited')
 xlim([.01,t_max]);
 xlabel('time [s]')
 ylabel('torque [pu] / # nodes [10^3]')
 % legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','northwest');
-legend('Torque reference', ctrl1.type, ctrl3.type, 'Location', 'northwest');
+legend('torque reference', ctrl1.type, ctrl3.type, 'Location', 'northwest');
 grid on;
 
 
@@ -188,8 +190,8 @@ hold off;
 title('Time')
 xlim([0,t_max]);
 xlabel('time [s]')
-ylabel('Torque [pu] / # Time [s]')
-legend('Torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
+ylabel('torque [pu] / # time [s]')
+legend('torque reference','# Nodes no limit','# Nodes ed guess', '# Nodes ed guess + sdp');
 grid on;
 end
 
@@ -220,8 +222,8 @@ hold off;
 title('Accumulated Cost')
 xlim([0,t_max]);
 xlabel('time [s]')
-ylabel('Torque [pu] / Accumulated Cost [10]')
-legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','northwest');
+ylabel('torque [pu] / accumulated cost [10]')
+legend('torque reference','opt', ctrl1.type, ctrl3.type, 'Location','northwest');
 grid on;
 
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -232,18 +234,19 @@ grid on;
 K_inv = [1 0; -.5 sqrt(3)/2; -.5 -sqrt(3)/2];
 i_s = sys.X_r/sys.D*x_vec_sim(1:2,:,:) - sys.X_m/sys.D*x_vec_sim(3:4,:,:);
 figure(10);
-plot(t_ctrl_vec, K_inv*squeeze(i_s(:,1,1:50:end-1)),'b');
+c0 = plot(t_ctrl_vec, K_inv*squeeze(i_s(:,1,1:50:end-1)),'b');
 hold on;
-plot(t_ctrl_vec, K_inv*squeeze(i_s(:,2,1:50:end-1)),'r');
-plot(t_ctrl_vec, K_inv*squeeze(i_s(:,4,1:50:end-1)),'g');
+c1 = plot(t_ctrl_vec, K_inv*squeeze(i_s(:,2,1:50:end-1)),'r');
+c3 = plot(t_ctrl_vec, K_inv*squeeze(i_s(:,4,1:50:end-1)),'g');
 hold off;
 
 grid on;
 title("Stator Currents")
 xlabel('time [s]')
-ylabel('Currents [pu]')
+ylabel('currents [pu]')
 xlim([0,1])
-legend('Torque reference','opt', ctrl1.type, ctrl2.type, ctrl3.type, 'Location','north');
+legend([c0(1), c1(1), c3(1)], ...
+    'opt', ctrl2.type, ctrl3.type, 'Location','north');
 
 
 % *************************************************************************
@@ -298,19 +301,19 @@ end
 fprintf(['Absolute flux rms error (',ctrl3.type,'): %.4fe-3 \n\n'], ...
     norm(Psi_sim(4,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 
-% Print traversed nodes
-fprintf('Traversed nodes with opt guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
-    mean(node_count(2,2e4:end)), ...
-    std(node_count(2,2e4:end)), ...
-    max(node_count(2,2e4:end)));
-fprintf('Traversed nodes with ed. guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
-    mean(node_count(1,2e4:end)), ...
-    std(node_count(1,2e4:end)), ...
-    max(node_count(1,2e4:end)));
-fprintf('Traversed nodes with bad guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
-    mean(node_count(3,2e4:end)), ...
-    std(node_count(3,2e4:end)), ...
-    max(node_count(3,2e4:end)));
+% % Print traversed nodes
+% fprintf('Traversed nodes with opt guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
+%     mean(node_count(2,2e4:end)), ...
+%     std(node_count(2,2e4:end)), ...
+%     max(node_count(2,2e4:end)));
+% fprintf('Traversed nodes with ed. guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
+%     mean(node_count(1,2e4:end)), ...
+%     std(node_count(1,2e4:end)), ...
+%     max(node_count(1,2e4:end)));
+% fprintf('Traversed nodes with bad guess in [# nodes] (mean, std, max): %.1f, %.1f, %.0f \n',...
+%     mean(node_count(3,2e4:end)), ...
+%     std(node_count(3,2e4:end)), ...
+%     max(node_count(3,2e4:end)));
 
 % % Current TDD
 % i_s = sys.X_r/sys.D*x_vec_sim(1:2,:,:) - sys.X_m/sys.D*x_vec_sim(3:4,:,:);

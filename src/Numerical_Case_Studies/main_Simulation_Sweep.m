@@ -1,15 +1,7 @@
 clear;
 
-if (exist('scs','file') ~= 2)
-    error("SCS could not be found.");
-end
-
-% Add paths for used functions
-addpath('./Controllers/')
-addpath('./Numerical_Case_Studies/')
-addpath('./Setup/')
-addpath('./Plotting')
-addpath('./Tools/','-begin')
+addpath('../..'); % add path to Setup.m if not yet executed
+Setup; % run path setup
 
 
 %% Setup
