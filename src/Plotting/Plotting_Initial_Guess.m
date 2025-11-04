@@ -201,6 +201,8 @@ fprintf('Torque rms error:                       %.4fe-3 \n', ...
 fprintf('Absolute flux rms error:                %.4fe-3 \n\n', ...
     norm(Psi_sim(1,:)-ref_sim(2,:),2)/sqrt(length(Psi_sim))*1e3);
 
+fprintf('Table: Number of nodes traversed by b&b.\n')
+
 % Parent nodes visited
 fprintf('---------------------------------------\n')
 fprintf('       Bad guess   Ed guess   Opt guess\n')
