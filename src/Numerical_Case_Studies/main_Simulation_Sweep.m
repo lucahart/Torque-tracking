@@ -22,8 +22,8 @@ sim_pre = struct();
 % Setup simulation parameters (Can Optionally be changed)
 % -------------------------------------------------------------------------
 % We will run n_sims simulations with n_steps steps as specified:
-n_sims = 1;
-n_steps = 5;
+n_sims = 10;
+n_steps = 10;
 
 % Step lengths are sampled from a uniform distribution on this interval:
 step_interval = [.5, 1.5]; % in [pu]

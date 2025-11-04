@@ -43,7 +43,7 @@ The simulations of interest can be found in the root folder and in Numerical_Cas
 
 ```main.m``` in the root folder provides a flexible, single simulation. It is currently set up to simulate a single torque step to show the impact of the SDP relaxations in finding good solutions.
 
-```Numerical_Case_Studies/main_Initial_Guess.m``` explores the impact of different initial guesses on the number of nodes traversed by the branch-and-bound algorithm.
+<!--```Numerical_Case_Studies/main_Initial_Guess.m``` explores the impact of different initial guesses on the number of nodes traversed by the branch-and-bound algorithm.-->
 
 ```Numerical_Case_Studies/main_Simulation_Sweep.m``` runs an extensive simulation sweep over multiple steps with different controller types.
 
