@@ -20,7 +20,7 @@ You can download your own version of [YALMIP-R20210331 here](https://github.com/
 
 ## Citation
 <!-- You can find a free-access version of our paper on [arXiv](https://arxiv.org/abs/2412.11666). -->
-If using this code for academic work, please cite us. Here are the Text and BibTex cytations:
+If using this code for academic work, please cite us. Here are the Text and BibTex citations:
 ```Text Citation
 Luca M. Hartmann, Orcun Karaca, Tinus Dorfling, Tobias Geyer, Adam Kurpisz,
 "On the SDP Relaxation of Direct Torque Finite Control Set Model Predictive Control,"
@@ -39,7 +39,8 @@ Luca M. Hartmann, Orcun Karaca, Tinus Dorfling, Tobias Geyer, Adam Kurpisz,
 ```
 
 ## Simulations
-The simulations of interest can be found in the root folder and in Numerical_Case_Studies:
+The simulations of interest can be found in the src folder and in Numerical_Case_Studies. 
+Make sure to be in the src folder, when starting ```main.m``` and run the first section of the scripts in ```Numerical_Case_Studies```, before starting the script if ```main.m``` has not been executed before. 
 
 ```main.m``` in the root folder provides a flexible, single simulation. It is currently set up to simulate a single torque step to show the impact of the SDP relaxations in finding good solutions.
 
